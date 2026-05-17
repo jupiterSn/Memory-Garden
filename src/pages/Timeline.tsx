@@ -1,58 +1,60 @@
-import { motion } from "framer-motion";
+import type { Memory } from "@/models/memory";
 
-function Timeline() {
-  const memories = [
-    {
-      year: "2024",
-      title: "Beach Sunset",
-      emoji: "🌅",
-    },
-    {
-      year: "2025",
-      title: "Japan Trip",
-      emoji: "🌸",
-    },
-    {
-      year: "2026",
-      title: "Graduation",
-      emoji: "🎓",
-    },
-  ];
+type TimelineProps = {
+  memories: Memory[];
+};
+
+function Timeline({ memories }: TimelineProps) {
+  const sortedMemories = [...memories].sort((a, b) => {
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
+  });
 
   return (
-    <section className="mx-auto max-w-4xl px-6 py-12">
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7 }}
-      >
-        <h1 className="mb-10 text-5xl font-bold text-emerald-900">
-          Memory Timeline 📖
-        </h1>
+    <section className="mx-auto max-w-4xl px-6 py-10">
+      <h1 className="mb-4 text-5xl font-bold text-emerald-900">
+        Memory Timeline 📖
+      </h1>
 
+      <p className="mb-10 text-stone-600">
+        View your planted memories from newest to oldest.
+      </p>
+
+      {sortedMemories.length === 0 ? (
+        <div className="rounded-3xl border border-dashed border-emerald-300 bg-white p-10 text-center">
+          <p className="text-5xl">📖</p>
+          <h2 className="mt-4 text-2xl font-semibold text-emerald-900">
+            No memories yet
+          </h2>
+          <p className="mt-2 text-stone-500">
+            Plant a memory first to build your timeline.
+          </p>
+        </div>
+      ) : (
         <div className="space-y-6">
-          {memories.map((memory) => (
-            <div
-              key={memory.title}
-              className="flex items-center gap-6 rounded-3xl border border-emerald-100 bg-white/80 p-6 shadow-lg"
+          {sortedMemories.map((memory) => (
+            <article
+              key={memory.id}
+              className="rounded-3xl border border-emerald-100 bg-white p-6 shadow-lg"
             >
-              <div className="text-5xl">
-                {memory.emoji}
-              </div>
+              <p className="text-sm font-medium text-emerald-700">
+                {memory.date}
+              </p>
 
-              <div>
-                <h2 className="text-2xl font-semibold text-stone-800">
-                  {memory.title}
-                </h2>
+              <h2 className="mt-2 text-2xl font-bold text-emerald-900">
+                {memory.title}
+              </h2>
 
-                <p className="text-stone-500">
-                  {memory.year}
-                </p>
-              </div>
-            </div>
+              <p className="mt-3 text-stone-600">
+                {memory.description}
+              </p>
+
+              <p className="mt-4 text-sm text-stone-500">
+                Emotion: {memory.emotion}
+              </p>
+            </article>
           ))}
         </div>
-      </motion.div>
+      )}
     </section>
   );
 }
