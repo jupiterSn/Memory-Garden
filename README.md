@@ -126,3 +126,30 @@ our routes change to:
 /timeline     protected
 /profile      protected
 /settings     protected
+
+we need to build in this order now:
+1. API client with interceptors
+   Every API request automatically sends token
+   If token is invalid/expired → logout user → redirect to login (from file apiClient.ts)
+2. AuthContext
+   this will control:
+   login
+   signup
+   logout
+   current user
+   token
+   authentication state
+   seperated the functions 
+   context/
+  AuthContext.tsx
+      → provider/state
+
+   hooks/
+  useAuth.ts
+      → reusable hook
+3. ProtectedRoute
+4. AuthLayout + MainLayout
+5. Login/Signup pages
+6. Logout
+7. Toast notifications
+8. Dashboard with AG Grid
