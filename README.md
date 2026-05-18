@@ -85,3 +85,44 @@ now the app supports:
 -Delete memory
 -Persist memory
 
+my architecture is gonna change to a more professional one:
+Frontend React app
+  ├── Public routes
+  │   ├── Login
+  │   └── Signup
+  │
+  ├── Protected routes
+  │   ├── Dashboard
+  │   ├── Plant Memory
+  │   ├── Garden
+  │   ├── Timeline
+  │   ├── Profile
+  │   └── Settings
+  │
+  ├── API layer
+  │   ├── axios instance
+  │   ├── token interceptor
+  │   └── global error handler
+  │
+  ├── Auth context
+  │   ├── user
+  │   ├── token
+  │   ├── login
+  │   ├── logout
+  │   └── protected route guard
+  │
+  └── Dashboard
+      ├── AG Grid memory table
+      ├── stats cards
+      └── management tools
+
+our routes change to:
+/login        public
+/signup       public
+
+/dashboard    protected
+/plant        protected
+/garden       protected
+/timeline     protected
+/profile      protected
+/settings     protected
