@@ -147,9 +147,46 @@ we need to build in this order now:
    hooks/
   useAuth.ts
       → reusable hook
+
+         ADDED THIS PART OF CODE: 
+import { AuthProvider } from "@/context/AuthContext";
+
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    <AuthProvider>
+      <App />
+    </AuthProvider>
+  </StrictMode>
+);
+NOW EVERY PAGE/COMPONENT CAN ACCESS:
+   user
+   token
+   login
+   signup
+   logout
+   isAuthenticated
+
+   THROUGH: useAuth()
 3. ProtectedRoute
+   WHAT THIS DOES:
+   If user NOT logged in
+    → redirect to /login
+
+   If logged in
+    → allow access
 4. AuthLayout + MainLayout
 5. Login/Signup pages
 6. Logout
 7. Toast notifications
 8. Dashboard with AG Grid
+
+   NOW MY APP HAS :
+   Public routes
+   Protected routes
+   Authentication guard
+   Dashboard
+   Login
+   Signup
+   Memory system
+   Persistent storage
+   Logout foundation
