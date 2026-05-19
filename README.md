@@ -190,3 +190,32 @@ NOW EVERY PAGE/COMPONENT CAN ACCESS:
    Memory system
    Persistent storage
    Logout foundation
+
+   cuurently frontend architecture is real but backend is not
+   my frontend expects POST /auth/login, POST /auth/signup
+   but backend doesnt exist yet
+   now i build express backend with:
+   node.js
+   express
+   MongoDB or MySQL
+   JWT auth
+   bycryprt passwords
+   auth middleware
+   real databse
+
+   created a new folder called memory-garden-backend with a new structure 
+   memory-garden-backend/
+  src/
+    server.js
+    routes/
+      authRoutes.js
+    controllers/
+      authController.js
+    middleware/
+      authMiddleware.js
+    data/
+      users.js
+  .env
+  package.json
+
+  
