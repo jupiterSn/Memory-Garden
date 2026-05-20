@@ -36,16 +36,20 @@ function Signup() {
   };
 
   return (
-    <section className="relative isolate grid min-h-screen overflow-hidden bg-pink-50 lg:grid-cols-[0.9fr_1.1fr]">
+    <section className="relative isolate min-h-screen overflow-hidden bg-pink-50">
       <img
         src={wisteriaAuth}
         alt="Wisteria tree garden"
         className="absolute inset-0 -z-20 h-full w-full object-cover object-center"
       />
-      <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(255,248,251,0.72)_0%,rgba(255,248,251,0.44)_42%,rgba(255,248,251,0.14)_100%)]" />
-      <div className="absolute inset-0 -z-10 bg-white/5 backdrop-blur-[0.5px]" />
+      <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(255,248,251,0.70)_0%,rgba(255,248,251,0.34)_44%,rgba(255,248,251,0.10)_100%)]" />
+      <div className="absolute inset-0 -z-10 bg-white/5" />
+      <AuthGardenPanel
+        eyebrow="Begin beneath the blooms"
+        title="Start a gentle garden for stories, photos, and small beautiful days."
+      />
 
-      <div className="relative z-10 flex items-center justify-center px-6 py-12">
+      <div className="relative z-10 flex min-h-screen items-center px-6 py-12 sm:px-10 lg:px-16">
         <div className="w-full max-w-md">
           <Link to="/" className="mb-8 inline-flex items-center gap-3">
             <span className="grid size-10 place-items-center rounded-xl bg-pink-100 text-pink-500">
@@ -129,11 +133,6 @@ function Signup() {
           </div>
         </div>
       </div>
-
-      <AuthGardenPanel
-        eyebrow="Begin beneath the blooms"
-        title="Start a gentle garden for stories, photos, and small beautiful days."
-      />
     </section>
   );
 }

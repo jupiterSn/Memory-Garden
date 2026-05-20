@@ -1,7 +1,5 @@
 import type { CSSProperties } from "react";
 
-import wisteriaAuth from "@/assets/wisteria-auth.png";
-
 type AuthGardenPanelProps = {
   eyebrow: string;
   title: string;
@@ -17,14 +15,7 @@ const strands = Array.from({ length: 12 }, (_, index) => ({
 
 function AuthGardenPanel({ eyebrow, title }: AuthGardenPanelProps) {
   return (
-    <div className="relative hidden min-h-screen overflow-hidden p-8 text-stone-900 lg:block">
-      <img
-        src={wisteriaAuth}
-        alt="Soft wisteria garden"
-        className="absolute inset-0 h-full w-full object-cover object-center opacity-90"
-      />
-      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,248,251,0.50)_0%,rgba(255,248,251,0.26)_46%,rgba(255,248,251,0.08)_100%)]" />
-
+    <div className="pointer-events-none absolute inset-0 z-0 hidden overflow-hidden text-stone-900 lg:block">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-72 overflow-hidden">
         {strands.map((strand) => (
           <span
@@ -55,11 +46,11 @@ function AuthGardenPanel({ eyebrow, title }: AuthGardenPanelProps) {
         ))}
       </div>
 
-      <div className="relative z-10 flex h-full min-h-[calc(100vh-4rem)] flex-col justify-end rounded-[2rem] border border-white/45 bg-white/16 p-8 shadow-2xl shadow-pink-100/40 backdrop-blur-[1px]">
+      <div className="absolute bottom-10 right-10 max-w-md rounded-[1.75rem] border border-white/45 bg-white/18 p-6 shadow-2xl shadow-pink-100/30 backdrop-blur-[1px]">
         <p className="text-sm font-medium uppercase tracking-[0.18em] text-pink-400">
           {eyebrow}
         </p>
-        <h2 className="mt-4 max-w-xl text-4xl font-semibold tracking-tight text-stone-900">
+        <h2 className="mt-4 text-3xl font-semibold tracking-tight text-stone-900">
           {title}
         </h2>
       </div>
