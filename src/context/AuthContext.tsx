@@ -45,11 +45,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const receivedToken = response.data.token;
     const receivedUser = response.data.user;
 
-    localStorage.setItem("memory-garden-token", receivedToken);
-    localStorage.setItem("memory-garden-user", JSON.stringify(receivedUser));
+    localStorage.setItem("memory-garden-remembered-email", email);
 
-    setToken(receivedToken);
-    setUser(receivedUser);
+    if (receivedToken && receivedUser) {
+      localStorage.setItem("memory-garden-token", receivedToken);
+      localStorage.setItem("memory-garden-user", JSON.stringify(receivedUser));
+
+      setToken(receivedToken);
+      setUser(receivedUser);
+    }
+
+    return {
+      emailVerificationRequired: response.data.emailVerificationRequired,
+      verificationUrl: response.data.verificationUrl,
+    };
   };
 
   const logout = () => {

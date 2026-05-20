@@ -13,6 +13,7 @@ Memory Garden is a full-stack React and Node.js application for preserving perso
 - Professional profile and settings surfaces
 - Admin user console for account safety without access to private memories
 - Express backend with JWT, bcrypt, security middleware, session tracking, and layered token invalidation
+- Email confirmation before first login
 - Cloudflare Turnstile-ready captcha verification
 
 ## Demo Accounts
@@ -48,6 +49,8 @@ Regular users can be created from the signup screen.
 POST /api/auth/signup
 POST /api/auth/login
 GET  /api/auth/me
+GET  /api/auth/verify-email/:token
+POST /api/auth/resend-verification
 
 GET   /api/admin/users
 PATCH /api/admin/users/:userId/status
@@ -86,6 +89,7 @@ Memory Garden includes a layered authentication and session security design:
 
 - Rate limiting for repeated login attempts
 - Cloudflare Turnstile captcha verification hook
+- Email confirmation before login
 - User lookup before password comparison
 - Pre-auth account status checks
 - bcrypt password verification

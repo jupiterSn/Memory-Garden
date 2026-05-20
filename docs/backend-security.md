@@ -20,12 +20,13 @@ Passwords are never stored as plaintext. They are hashed with bcrypt before savi
 4. Look up user.
 5. Run pre-auth account checks.
 6. Compare password with bcrypt.
-7. Detect anomalies such as repeated failures.
-8. Check optional two-factor code.
-9. Enforce max active session limit.
-10. Create session.
-11. Sign JWT with session ID.
-12. Record successful login.
+7. Confirm the email is verified.
+8. Detect anomalies such as repeated failures.
+9. Check optional two-factor code.
+10. Enforce max active session limit.
+11. Create session.
+12. Sign JWT with session ID.
+13. Record successful login.
 
 ## Rate Limiting
 
@@ -34,6 +35,10 @@ The login endpoint tracks attempts by IP and email. Too many attempts in the win
 ## Cloudflare Turnstile
 
 The backend supports Turnstile through `CLOUDFLARE_TURNSTILE_SECRET`. In development, if the secret is missing, verification is bypassed so local testing can continue.
+
+## Email Confirmation
+
+Signup creates an unverified account and an email verification token. The user must confirm the token through `/verify-email/:token` before login is allowed. In development, the backend returns the verification URL and stores a message in an in-memory outbox. In production, configure an email delivery provider through `EMAIL_WEBHOOK_URL` or replace the email service with SMTP/provider-specific delivery.
 
 ## Device Trust
 

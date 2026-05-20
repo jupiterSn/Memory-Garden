@@ -22,7 +22,23 @@ function Signup() {
 
     try {
       setLoading(true);
-      await signup(name, email, password);
+      const result = await signup(name, email, password);
+
+      if (result.emailVerificationRequired) {
+        if (result.verificationUrl) {
+          localStorage.setItem(
+            "memory-garden-pending-verification-url",
+            result.verificationUrl
+          );
+        }
+
+        toast.success("Account created", {
+          description: "Please confirm your email before logging in.",
+        });
+        navigate("/login");
+        return;
+      }
+
       toast.success("Account created");
       navigate("/dashboard");
     } catch (error) {

@@ -10,6 +10,10 @@ export const userBlacklist = new Set();
 
 export const securityEvents = [];
 
+export const emailVerificationTokens = new Map();
+
+export const emailOutbox = [];
+
 export const globalInvalidation = {
   invalidatedAt: 0,
 };

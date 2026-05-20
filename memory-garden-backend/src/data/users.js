@@ -8,6 +8,8 @@ const users = [
     status: "active",
     createdAt: new Date("2026-05-20T00:00:00.000Z").toISOString(),
     lastLoginAt: null,
+    emailVerified: true,
+    emailVerifiedAt: new Date("2026-05-20T00:00:00.000Z").toISOString(),
     trustedDevices: [],
     userInvalidatedAt: 0,
     failedLoginCount: 0,

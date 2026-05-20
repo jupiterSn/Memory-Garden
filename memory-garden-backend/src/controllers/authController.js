@@ -2,6 +2,11 @@ import bcrypt from "bcryptjs";
 
 import users from "../data/users.js";
 import {
+  createEmailVerification,
+  sendVerificationEmail,
+  verifyEmailToken,
+} from "../services/emailService.js";
+import {
   checkRateLimit,
   checkTwoFactor,
   createAuthToken,
@@ -61,6 +66,8 @@ export const signup = async (req, res) => {
       status: "active",
       createdAt: new Date().toISOString(),
       lastLoginAt: null,
+      emailVerified: false,
+      emailVerifiedAt: null,
       trustedDevices: [],
       userInvalidatedAt: 0,
       failedLoginCount: 0,
@@ -69,18 +76,13 @@ export const signup = async (req, res) => {
 
     users.push(newUser);
 
-    const session = createSession(req, newUser);
-    const token = createAuthToken(newUser, session);
-
-    recordSuccessfulLogin(newUser, session);
+    const verification = createEmailVerification(newUser);
+    await sendVerificationEmail(newUser, verification);
 
     res.status(201).json({
-      token,
       user: sanitizeUser(newUser),
-      session: {
-        id: session.id,
-        createdAt: session.createdAt,
-      },
+      emailVerificationRequired: true,
+      verificationUrl: verification.verificationUrl,
     });
   } catch (error) {
     console.error(error);
@@ -148,6 +150,17 @@ export const login = async (req, res) => {
       });
     }
 
+    if (!user.emailVerified) {
+      const verification = createEmailVerification(user);
+      await sendVerificationEmail(user, verification);
+
+      return res.status(403).json({
+        message: "Please confirm your email before logging in.",
+        emailVerificationRequired: true,
+        verificationUrl: verification.verificationUrl,
+      });
+    }
+
     const twoFactor = checkTwoFactor(user, twoFactorCode);
 
     if (!twoFactor.allowed) {
@@ -178,4 +191,44 @@ export const login = async (req, res) => {
       message: "Login failed",
     });
   }
+};
+
+export const verifyEmail = (req, res) => {
+  const result = verifyEmailToken(req.params.token, users);
+
+  if (!result.verified) {
+    return res.status(400).json({
+      message: result.message,
+    });
+  }
+
+  return res.json({
+    message: "Email verified",
+    user: sanitizeUser(result.user),
+  });
+};
+
+export const resendVerification = async (req, res) => {
+  const normalizedEmail = normalizeEmail(req.body.email);
+  const user = users.find((candidate) => candidate.email === normalizedEmail);
+
+  if (!user) {
+    return res.status(200).json({
+      message: "If the account exists, a verification email was sent.",
+    });
+  }
+
+  if (user.emailVerified) {
+    return res.json({
+      message: "Email is already verified.",
+    });
+  }
+
+  const verification = createEmailVerification(user);
+  await sendVerificationEmail(user, verification);
+
+  return res.json({
+    message: "Verification email sent.",
+    verificationUrl: verification.verificationUrl,
+  });
 };

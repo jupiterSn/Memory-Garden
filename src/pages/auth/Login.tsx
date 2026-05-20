@@ -1,7 +1,8 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Flower2, Lock, Mail } from "lucide-react";
+import { Check, Flower2, Lock, Mail } from "lucide-react";
 import { toast } from "sonner";
+import { AxiosError } from "axios";
 
 import AuthGardenPanel from "@/components/AuthGardenPanel";
 import { Button } from "@/components/ui/button";
@@ -12,8 +13,16 @@ function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(() =>
+    localStorage.getItem("memory-garden-remembered-email") ?? ""
+  );
   const [password, setPassword] = useState("");
+  const [rememberEmail, setRememberEmail] = useState(() =>
+    Boolean(localStorage.getItem("memory-garden-remembered-email"))
+  );
+  const [verificationUrl] = useState(() =>
+    localStorage.getItem("memory-garden-pending-verification-url")
+  );
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -22,10 +31,24 @@ function Login() {
     try {
       setLoading(true);
       await login(email, password);
+      if (rememberEmail) {
+        localStorage.setItem("memory-garden-remembered-email", email);
+      } else {
+        localStorage.removeItem("memory-garden-remembered-email");
+      }
       toast.success("Welcome back");
       navigate("/dashboard");
     } catch (error) {
       console.error(error);
+      const response = error instanceof AxiosError ? error.response?.data : null;
+
+      if (response?.emailVerificationRequired) {
+        toast.error("Email confirmation needed", {
+          description: "Open the verification link sent to your email.",
+        });
+        return;
+      }
+
       toast.error("Login failed", {
         description: "Check your email and password, then try again.",
       });
@@ -68,6 +91,26 @@ function Login() {
               Sign in to continue curating your private archive.
             </p>
 
+            {verificationUrl && (
+              <div className="mt-5 rounded-2xl border border-pink-100 bg-pink-50/80 p-4 text-sm text-stone-600">
+                <p className="font-semibold text-stone-900">
+                  Email confirmation is waiting
+                </p>
+                <p className="mt-1 leading-6">
+                  Open the confirmation link before logging in.
+                </p>
+                <Link
+                  to={new URL(verificationUrl).pathname}
+                  className="mt-3 inline-flex font-semibold text-pink-500"
+                  onClick={() =>
+                    localStorage.removeItem("memory-garden-pending-verification-url")
+                  }
+                >
+                  Confirm email
+                </Link>
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="mt-6 space-y-4">
               <label className="block">
                 <span className="mg-label">Email</span>
@@ -97,6 +140,25 @@ function Login() {
                     placeholder="Your password"
                   />
                 </div>
+              </label>
+
+              <label className="flex items-center gap-3 rounded-2xl border border-pink-100 bg-white/60 px-3 py-2 text-sm text-stone-600">
+                <input
+                  type="checkbox"
+                  checked={rememberEmail}
+                  onChange={(event) => setRememberEmail(event.target.checked)}
+                  className="sr-only"
+                />
+                <span
+                  className={`grid size-5 place-items-center rounded-md border ${
+                    rememberEmail
+                      ? "border-pink-200 bg-pink-100 text-pink-500"
+                      : "border-pink-100 bg-white text-transparent"
+                  }`}
+                >
+                  <Check className="size-3.5" />
+                </span>
+                Remember my email on this device
               </label>
 
               <Button

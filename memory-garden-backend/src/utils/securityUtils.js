@@ -34,6 +34,7 @@ export function sanitizeUser(user) {
     email: user.email,
     role: user.role || "user",
     status: user.status || "active",
+    emailVerified: Boolean(user.emailVerified),
     createdAt: user.createdAt,
     lastLoginAt: user.lastLoginAt,
   };
@@ -46,6 +47,7 @@ export function sanitizeUserForAdmin(user) {
     email: user.email,
     role: user.role || "user",
     status: user.status || "active",
+    emailVerified: Boolean(user.emailVerified),
     createdAt: user.createdAt,
     lastLoginAt: user.lastLoginAt,
     activeSessions: user.activeSessions || 0,

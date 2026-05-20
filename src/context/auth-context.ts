@@ -15,7 +15,14 @@ export type AuthContextType = {
   token: string | null;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  signup: (name: string, email: string, password: string) => Promise<void>;
+  signup: (
+    name: string,
+    email: string,
+    password: string
+  ) => Promise<{
+    emailVerificationRequired?: boolean;
+    verificationUrl?: string;
+  }>;
   logout: () => void;
 };
 

@@ -59,6 +59,9 @@ Prevents repeated brute-force login attempts.
 Captcha:
 Cloudflare Turnstile can verify that the request is not automated.
 
+Email confirmation:
+New accounts are marked unverified until the user opens the verification link. Login is blocked until email ownership is confirmed.
+
 Password hashing:
 Passwords are stored as bcrypt hashes, never plaintext.
 
