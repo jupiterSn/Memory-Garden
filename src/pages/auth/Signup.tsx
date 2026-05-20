@@ -1,112 +1,139 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useState, type FormEvent } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Flower2, Lock, Mail, User } from "lucide-react";
+import { toast } from "sonner";
 
+import AuthGardenPanel from "@/components/AuthGardenPanel";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import wisteriaAuth from "@/assets/wisteria-auth.png";
 
 function Signup() {
   const navigate = useNavigate();
-
   const { signup } = useAuth();
 
   const [name, setName] = useState("");
-
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const [password, setPassword] =
-    useState("");
-
-  const [loading, setLoading] =
-    useState(false);
-
-  const handleSubmit = async (
-    e: React.FormEvent<HTMLFormElement>
-  ) => {
-    e.preventDefault();
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
     try {
       setLoading(true);
-
       await signup(name, email, password);
-
+      toast.success("Account created");
       navigate("/dashboard");
     } catch (error) {
       console.error(error);
-
-      alert("Signup failed");
+      toast.error("Signup failed", {
+        description: "Try a different email or check your details.",
+      });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <section className="flex min-h-screen items-center justify-center bg-emerald-50 px-6">
-      <div className="w-full max-w-md rounded-3xl bg-white p-10 shadow-xl">
-        <h1 className="mb-2 text-4xl font-bold text-emerald-900">
-          Create Account 🌱
-        </h1>
+    <section className="relative isolate grid min-h-screen overflow-hidden bg-pink-50 lg:grid-cols-[0.9fr_1.1fr]">
+      <img
+        src={wisteriaAuth}
+        alt="Wisteria tree garden"
+        className="absolute inset-0 -z-20 h-full w-full object-cover object-center"
+      />
+      <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(255,248,251,0.72)_0%,rgba(255,248,251,0.44)_42%,rgba(255,248,251,0.14)_100%)]" />
+      <div className="absolute inset-0 -z-10 bg-white/5 backdrop-blur-[0.5px]" />
 
-        <p className="mb-8 text-stone-500">
-          Start growing your Memory Garden
-        </p>
-
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-5"
-        >
-          <input
-            type="text"
-            placeholder="Full Name"
-            required
-            value={name}
-            onChange={(e) =>
-              setName(e.target.value)
-            }
-            className="w-full rounded-2xl border border-emerald-200 px-4 py-3"
-          />
-
-          <input
-            type="email"
-            placeholder="Email"
-            required
-            value={email}
-            onChange={(e) =>
-              setEmail(e.target.value)
-            }
-            className="w-full rounded-2xl border border-emerald-200 px-4 py-3"
-          />
-
-          <input
-            type="password"
-            placeholder="Password"
-            required
-            value={password}
-            onChange={(e) =>
-              setPassword(e.target.value)
-            }
-            className="w-full rounded-2xl border border-emerald-200 px-4 py-3"
-          />
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-2xl bg-emerald-700 px-6 py-4 font-semibold text-white"
-          >
-            {loading
-              ? "Creating Account..."
-              : "Signup"}
-          </button>
-        </form>
-
-        <p className="mt-6 text-center text-sm text-stone-500">
-          Already have an account?{" "}
-          <Link
-            to="/login"
-            className="font-semibold text-emerald-700"
-          >
-            Login
+      <div className="relative z-10 flex items-center justify-center px-6 py-12">
+        <div className="w-full max-w-md">
+          <Link to="/" className="mb-8 inline-flex items-center gap-3">
+            <span className="grid size-10 place-items-center rounded-xl bg-pink-100 text-pink-500">
+              <Flower2 className="size-5" />
+            </span>
+            <span className="font-semibold tracking-tight text-stone-900">
+              Memory Garden
+            </span>
           </Link>
-        </p>
+
+          <div className="mg-panel bg-white/62 p-6 shadow-xl shadow-pink-100/50 backdrop-blur-md">
+            <p className="mg-label">Create account</p>
+            <h1 className="mt-2 text-3xl font-semibold tracking-tight text-stone-900">
+              Start your garden
+            </h1>
+            <p className="mt-2 text-sm text-zinc-500">
+              Create a secure account for your memory workspace.
+            </p>
+
+            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+              <label className="block">
+                <span className="mg-label">Name</span>
+                <div className="relative mt-2">
+                  <User className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-zinc-400" />
+                  <input
+                    type="text"
+                    required
+                    value={name}
+                    onChange={(event) => setName(event.target.value)}
+                    className="mg-input pl-9"
+                    placeholder="Full name"
+                  />
+                </div>
+              </label>
+
+              <label className="block">
+                <span className="mg-label">Email</span>
+                <div className="relative mt-2">
+                  <Mail className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-zinc-400" />
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    className="mg-input pl-9"
+                    placeholder="you@example.com"
+                  />
+                </div>
+              </label>
+
+              <label className="block">
+                <span className="mg-label">Password</span>
+                <div className="relative mt-2">
+                  <Lock className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-zinc-400" />
+                  <input
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    className="mg-input pl-9"
+                    placeholder="Create a password"
+                  />
+                </div>
+              </label>
+
+              <Button
+                type="submit"
+                disabled={loading}
+                className="garden-button h-11 w-full"
+              >
+                {loading ? "Creating account..." : "Create account"}
+              </Button>
+            </form>
+
+            <p className="mt-6 text-center text-sm text-zinc-500">
+              Already have an account?{" "}
+              <Link to="/login" className="font-semibold text-pink-500">
+                Login
+              </Link>
+            </p>
+          </div>
+        </div>
       </div>
+
+      <AuthGardenPanel
+        eyebrow="Begin beneath the blooms"
+        title="Start a gentle garden for stories, photos, and small beautiful days."
+      />
     </section>
   );
 }

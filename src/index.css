@@ -128,3 +128,137 @@
     @apply font-sans;
     }
 }
+
+@layer base {
+  body {
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+@layer components {
+  .mg-panel {
+    @apply rounded-xl border border-pink-100/80 bg-white/80 shadow-sm shadow-pink-100/70 backdrop-blur;
+  }
+
+  .mg-input {
+    @apply h-11 w-full rounded-lg border border-pink-100 bg-white/90 px-3 text-sm text-stone-800 outline-none transition placeholder:text-stone-400 focus:border-pink-200 focus:ring-4 focus:ring-pink-100/70;
+  }
+
+  .mg-select {
+    @apply h-12 w-full appearance-none rounded-2xl border border-pink-100 bg-white/85 px-4 pr-10 text-sm font-medium text-stone-700 shadow-sm shadow-pink-50 outline-none transition hover:border-pink-200 focus:border-pink-200 focus:ring-4 focus:ring-pink-100/80;
+    background-image:
+      linear-gradient(45deg, transparent 50%, #d9a8b8 50%),
+      linear-gradient(135deg, #d9a8b8 50%, transparent 50%);
+    background-position:
+      calc(100% - 18px) 50%,
+      calc(100% - 12px) 50%;
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+  }
+
+  .mg-date {
+    @apply h-12 w-full rounded-2xl border border-pink-100 bg-white/85 px-4 text-sm font-medium text-stone-700 shadow-sm shadow-pink-50 outline-none transition hover:border-pink-200 focus:border-pink-200 focus:ring-4 focus:ring-pink-100/80;
+    color-scheme: light;
+  }
+
+  .mg-label {
+    @apply text-xs font-semibold uppercase tracking-[0.12em] text-pink-400;
+  }
+
+  .sakura-petal {
+    position: absolute;
+    top: -10vh;
+    width: var(--petal-size);
+    height: calc(var(--petal-size) * 0.72);
+    border-radius: 70% 30% 70% 30%;
+    background:
+      radial-gradient(circle at 32% 34%, rgba(255, 255, 255, 0.85), transparent 28%),
+      linear-gradient(135deg, rgba(255, 211, 224, 0.92), rgba(244, 147, 173, 0.8));
+    box-shadow: 0 10px 24px rgba(244, 114, 182, 0.12);
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    animation: petal-fall var(--petal-duration) linear infinite;
+    animation-delay: var(--petal-delay);
+    filter: blur(var(--petal-blur));
+  }
+
+  .garden-button {
+    @apply relative isolate overflow-hidden rounded-full text-stone-800 shadow-sm shadow-pink-100 transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-pink-100 active:translate-y-0;
+    background: linear-gradient(135deg, #fde2ea 0%, #f9c6d7 48%, #f7d7ef 100%);
+    color: #5f3f46;
+  }
+
+  .garden-button::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+    transform: translateX(-120%);
+    transition: transform 0.55s ease;
+  }
+
+  .garden-button:hover::before {
+    transform: translateX(120%);
+  }
+
+  .wisteria-strand {
+    position: absolute;
+    top: -12px;
+    width: 24px;
+    transform-origin: 50% 0;
+    animation-name: wisteria-sway;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+  }
+
+  .wisteria-strand::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 0;
+    height: 100%;
+    width: 1px;
+    background: linear-gradient(180deg, rgba(117, 101, 68, 0.35), rgba(117, 101, 68, 0));
+  }
+
+  .wisteria-bloom {
+    position: absolute;
+    left: 50%;
+    border-radius: 70% 30% 72% 28%;
+    background:
+      radial-gradient(circle at 35% 28%, rgba(255, 255, 255, 0.75), transparent 28%),
+      linear-gradient(135deg, rgba(238, 220, 255, 0.9), rgba(195, 166, 232, 0.72));
+    box-shadow: 0 8px 18px rgba(167, 139, 250, 0.13);
+    transform: translateX(-50%) rotate(-8deg);
+  }
+}
+
+@keyframes petal-fall {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -8vh, 0) rotate(0deg);
+  }
+  10% {
+    opacity: var(--petal-opacity);
+  }
+  50% {
+    transform: translate3d(var(--petal-drift), 52vh, 0) rotate(220deg);
+  }
+  92% {
+    opacity: var(--petal-opacity);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(calc(var(--petal-drift) * -0.35), 112vh, 0) rotate(460deg);
+  }
+}
+
+@keyframes wisteria-sway {
+  0%, 100% {
+    transform: rotate(-2.5deg) translateX(-2px);
+  }
+  50% {
+    transform: rotate(3deg) translateX(5px);
+  }
+}

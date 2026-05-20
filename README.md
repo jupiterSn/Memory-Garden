@@ -1,221 +1,128 @@
-write whats on your paper here explaining the steps to the project till now 
+# Memory Garden
 
+Memory Garden is a full-stack React and Node.js application for preserving personal memories in a calm, visual garden experience. Users can sign up, sign in, plant memories with emotions, attach media, view their memories in a garden or timeline, and manage their account through a protected workspace.
 
-now i have a stable frontend foundation:
-react
-+vite
-+typescript
-+tailwind
-+shadcn/ui
-+react router
+## Highlights
 
-next step is building the first real feature:
-THE PLANT MEMORY FORM 
-this is where the application becomes interactive instead of static pages
-The form should collect:
--memory title 
--description/story
--emotion
--date
-Then later we will connect it to:
-GARDEN PAGE; 
-->visual memory cards
-->emotional plants
+- React + TypeScript + Vite frontend
+- Tailwind CSS, shadcn/ui primitives, lucide icons, Framer Motion
+- Protected routing with Context API authentication
+- Axios API client with JWT interceptor and 401 handling
+- Memory creation with images/videos, local persistence, garden rendering, and timeline views
+- Dashboard with cards and AG Grid memory registry
+- Professional profile and settings surfaces
+- Admin user console for account safety without access to private memories
+- Express backend with JWT, bcrypt, security middleware, session tracking, and layered token invalidation
+- Cloudflare Turnstile-ready captcha verification
 
-What we're building architecturally:(real data flow)
-User Input
-   ↓
-React State
-   ↓
-Memory Object
-   ↓
-Memory Array
-   ↓
-Garden Rendering
+## Demo Accounts
 
-what happens technically when user submits form:
-Input fields
-→ state updates
-→ memory object created
-→ stored in array/state
-→ displayed visually
+Admin:
 
-we're understanding here the use of:
-state
-forms
-controlled inputs
-event handling
-rendering lists
-data flow in React
-!These are core React concepts.!
+```text
+Email: admin@memorygarden.local
+Password: Admin@12345
+```
 
-now after modifying and testing plantMemory:
-->routing works
-->forms work
-->state works
-->file upload works
-->previews work
-->project architecture works
+Regular users can be created from the signup screen.
 
-Right now, PlantMemory logs the memory only in the console.
-But we need this flow:
-PlantMemory form
-→ create memory object
-→ save it in App state
-→ show it in Garden
-→ show it in Timeline
+## Frontend Routes
 
-So next we should update:
-App.tsx
-PlantMemory.tsx
-Garden.tsx
-Timeline.tsx
-(to share the same memories)
+```text
+/             Public landing page
+/login        Login
+/signup       Signup
+/app          Protected garden home
+/dashboard    Dashboard and AG Grid registry
+/plant        Plant a memory
+/garden       Visual planted garden
+/timeline     Chronological memory view
+/profile      Profile management
+/settings     Workspace settings
+/admin        Admin user safety console
+```
 
-logic flow
-PlantMemory → App state → Garden + Timeline
+## Backend Routes
 
-Next: add localStorage so memories don’t disappear when you refresh the page.
-in app.tsx
+```text
+POST /api/auth/signup
+POST /api/auth/login
+GET  /api/auth/me
 
-and add delete memory features in app.tsx that are passes in garden and timeline
-now the app supports:
--Create memory
--Read memory
--Delete memory
--Persist memory
+GET   /api/admin/users
+PATCH /api/admin/users/:userId/status
+POST  /api/admin/users/:userId/revoke-sessions
+GET   /api/admin/security
+```
 
-my architecture is gonna change to a more professional one:
-Frontend React app
-  ├── Public routes
-  │   ├── Login
-  │   └── Signup
-  │
-  ├── Protected routes
-  │   ├── Dashboard
-  │   ├── Plant Memory
-  │   ├── Garden
-  │   ├── Timeline
-  │   ├── Profile
-  │   └── Settings
-  │
-  ├── API layer
-  │   ├── axios instance
-  │   ├── token interceptor
-  │   └── global error handler
-  │
-  ├── Auth context
-  │   ├── user
-  │   ├── token
-  │   ├── login
-  │   ├── logout
-  │   └── protected route guard
-  │
-  └── Dashboard
-      ├── AG Grid memory table
-      ├── stats cards
-      └── management tools
+Admin routes require an authenticated user with `role: "admin"`.
 
-our routes change to:
-/login        public
-/signup       public
+## Running The Project
 
-/dashboard    protected
-/plant        protected
-/garden       protected
-/timeline     protected
-/profile      protected
-/settings     protected
+Frontend:
 
-we need to build in this order now:
-1. API client with interceptors
-   Every API request automatically sends token
-   If token is invalid/expired → logout user → redirect to login (from file apiClient.ts)
-2. AuthContext
-   this will control:
-   login
-   signup
-   logout
-   current user
-   token
-   authentication state
-   seperated the functions 
-   context/
-  AuthContext.tsx
-      → provider/state
+```bash
+npm install
+npm run dev
+```
 
-   hooks/
-  useAuth.ts
-      → reusable hook
+Backend:
 
-         ADDED THIS PART OF CODE: 
-import { AuthProvider } from "@/context/AuthContext";
+```bash
+cd memory-garden-backend
+npm install
+npm run dev
+```
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <AuthProvider>
-      <App />
-    </AuthProvider>
-  </StrictMode>
-);
-NOW EVERY PAGE/COMPONENT CAN ACCESS:
-   user
-   token
-   login
-   signup
-   logout
-   isAuthenticated
+The frontend expects the API at:
 
-   THROUGH: useAuth()
-3. ProtectedRoute
-   WHAT THIS DOES:
-   If user NOT logged in
-    → redirect to /login
+```text
+http://localhost:5000/api
+```
 
-   If logged in
-    → allow access
-4. AuthLayout + MainLayout
-5. Login/Signup pages
-6. Logout
-7. Toast notifications
-8. Dashboard with AG Grid
+## Security Features
 
-   NOW MY APP HAS :
-   Public routes
-   Protected routes
-   Authentication guard
-   Dashboard
-   Login
-   Signup
-   Memory system
-   Persistent storage
-   Logout foundation
+Memory Garden includes a layered authentication and session security design:
 
-   cuurently frontend architecture is real but backend is not
-   my frontend expects POST /auth/login, POST /auth/signup
-   but backend doesnt exist yet
-   now i build express backend with:
-   node.js
-   express
-   MongoDB or MySQL
-   JWT auth
-   bycryprt passwords
-   auth middleware
-   real databse
+- Rate limiting for repeated login attempts
+- Cloudflare Turnstile captcha verification hook
+- User lookup before password comparison
+- Pre-auth account status checks
+- bcrypt password verification
+- Login anomaly detection
+- Device trust fingerprint checks
+- Optional 2FA check flow
+- Maximum active sessions per user
+- Session creation and tracking
+- Successful login recording
+- Four token invalidation layers:
+  - Pre-token blacklist
+  - Session-level blacklist
+  - User-level blacklist
+  - Global invalidation timestamp
 
-   created a new folder called memory-garden-backend with a new structure 
-   memory-garden-backend/
-  src/
-    server.js
-    routes/
-      authRoutes.js
-    controllers/
-      authController.js
-    middleware/
-      authMiddleware.js
-    data/
-      users.js
-  .env
-  package.json
+The current implementation uses in-memory development stores with clear service boundaries. These can be moved to MySQL tables without changing the route structure.
 
-  
+## Documentation
+
+Detailed documentation is available in [docs](./docs):
+
+- [Architecture](./docs/architecture.md)
+- [Frontend](./docs/frontend.md)
+- [Backend And Security](./docs/backend-security.md)
+- [Admin Console](./docs/admin.md)
+- [Presentation Guide](./docs/presentation-guide.md)
+
+## Build Verification
+
+```bash
+npm.cmd run build
+npm.cmd run lint
+```
+
+Backend syntax can be checked by starting the server:
+
+```bash
+cd memory-garden-backend
+npm.cmd start
+```

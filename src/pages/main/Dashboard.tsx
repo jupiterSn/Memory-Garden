@@ -1,73 +1,231 @@
-import { useAuth } from "@/hooks/useAuth";
+import { useMemo } from "react";
+import { Link } from "react-router-dom";
+import { AgGridReact } from "ag-grid-react";
+import type { ColDef } from "ag-grid-community";
+import {
+  CalendarDays,
+  Image,
+  Leaf,
+  PlayCircle,
+  Plus,
+  Sparkles,
+  TrendingUp,
+} from "lucide-react";
+import { motion } from "framer-motion";
 
-function Dashboard() {
-  const { user, logout } = useAuth();
+import "ag-grid-community/styles/ag-grid.css";
+import "ag-grid-community/styles/ag-theme-quartz.css";
+
+import MemoryCard from "@/components/MemoryCard";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
+import type { Memory } from "@/models/memory";
+
+type DashboardProps = {
+  memories: Memory[];
+};
+
+type MemoryRow = {
+  title: string;
+  emotion: string;
+  date: string;
+  media: string;
+};
+
+function Dashboard({ memories }: DashboardProps) {
+  const { user } = useAuth();
+
+  const stats = useMemo(() => {
+    const withMedia = memories.filter((memory) => memory.mediaUrl).length;
+    const videos = memories.filter((memory) => memory.mediaType === "video").length;
+    const uniqueMoods = new Set(memories.map((memory) => memory.emotion)).size;
+
+    return [
+      {
+        label: "Total memories",
+        value: memories.length,
+        detail: memories.length === 1 ? "1 story archived" : `${memories.length} stories archived`,
+        icon: Leaf,
+        color: "bg-emerald-100 text-emerald-800",
+      },
+      {
+        label: "With media",
+        value: withMedia,
+        detail: "Images and videos attached",
+        icon: Image,
+        color: "bg-cyan-100 text-cyan-800",
+      },
+      {
+        label: "Video moments",
+        value: videos,
+        detail: "Motion memories captured",
+        icon: PlayCircle,
+        color: "bg-violet-100 text-violet-800",
+      },
+      {
+        label: "Mood range",
+        value: uniqueMoods,
+        detail: "Emotion categories used",
+        icon: Sparkles,
+        color: "bg-amber-100 text-amber-800",
+      },
+    ];
+  }, [memories]);
+
+  const recentMemories = useMemo(
+    () =>
+      [...memories]
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        .slice(0, 3),
+    [memories]
+  );
+
+  const rowData = useMemo<MemoryRow[]>(
+    () =>
+      memories.map((memory) => ({
+        title: memory.title,
+        emotion: memory.emotion,
+        date: memory.date,
+        media: memory.mediaType ?? "text",
+      })),
+    [memories]
+  );
+
+  const columnDefs = useMemo<ColDef<MemoryRow>[]>(
+    () => [
+      { field: "title", flex: 1.5, minWidth: 180 },
+      { field: "emotion", flex: 1, minWidth: 130 },
+      { field: "date", flex: 1, minWidth: 130, sort: "desc" },
+      { field: "media", flex: 1, minWidth: 120 },
+    ],
+    []
+  );
 
   return (
-    <section className="mx-auto max-w-7xl px-6 py-10">
-      <div className="mb-10 flex items-center justify-between">
-        <div>
-          <h1 className="text-5xl font-bold text-emerald-900">
-            Dashboard 🌿
-          </h1>
+    <section className="space-y-6">
+      <motion.div
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="grid gap-4 lg:grid-cols-[1.4fr_0.6fr]"
+      >
+        <div className="mg-panel p-6">
+          <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="mg-label">Overview</p>
+              <h1 className="mt-2 max-w-2xl text-3xl font-semibold tracking-tight text-stone-900">
+                Welcome back, {user?.name ?? "Memory Keeper"}.
+              </h1>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-600">
+                Track your private archive, review recent uploads, and keep the
+                garden organized from a single operating view.
+              </p>
+            </div>
 
-          <p className="mt-2 text-stone-500">
-            Welcome back,
-            {" "}
-            <span className="font-semibold">
-              {user?.name}
-            </span>
-          </p>
+            <Button asChild className="h-10 rounded-xl bg-pink-500 px-4 text-white hover:bg-pink-500">
+              <Link to="/plant">
+                <Plus className="size-4" />
+                New memory
+              </Link>
+            </Button>
+          </div>
         </div>
 
-        <button
-          onClick={logout}
-          className="rounded-2xl bg-red-100 px-5 py-3 font-semibold text-red-700 transition hover:bg-red-200"
-        >
-          Logout
-        </button>
+        <div className="mg-panel p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="mg-label">This month</p>
+              <p className="mt-2 text-2xl font-semibold text-stone-900">
+                {memories.length} entries
+              </p>
+            </div>
+            <span className="grid size-11 place-items-center rounded-lg bg-emerald-100 text-emerald-800">
+              <TrendingUp className="size-5" />
+            </span>
+          </div>
+          <div className="mt-5 h-2 overflow-hidden rounded-full bg-zinc-100">
+            <div
+              className="h-full rounded-full bg-emerald-500"
+              style={{ width: `${Math.min(memories.length * 12, 100)}%` }}
+            />
+          </div>
+        </div>
+      </motion.div>
+
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {stats.map((stat) => {
+          const Icon = stat.icon;
+
+          return (
+            <motion.div
+              key={stat.label}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mg-panel p-5"
+            >
+              <div className="flex items-center justify-between">
+                <span className={`grid size-10 place-items-center rounded-lg ${stat.color}`}>
+                  <Icon className="size-5" />
+                </span>
+                <span className="text-xs font-medium text-zinc-500">Live</span>
+              </div>
+              <p className="mt-5 text-sm font-medium text-zinc-500">{stat.label}</p>
+              <p className="mt-1 text-3xl font-semibold text-stone-900">{stat.value}</p>
+              <p className="mt-2 text-xs text-zinc-500">{stat.detail}</p>
+            </motion.div>
+          );
+        })}
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-3xl bg-white p-6 shadow-lg">
-          <p className="text-sm text-stone-500">
-            Total Memories
-          </p>
+      <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
+        <section className="mg-panel p-5">
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <p className="mg-label">Recent memories</p>
+              <h2 className="mt-1 text-lg font-semibold text-stone-900">Latest uploads</h2>
+            </div>
+            <Button asChild variant="outline" className="h-9">
+              <Link to="/garden">View all</Link>
+            </Button>
+          </div>
 
-          <h2 className="mt-3 text-4xl font-bold text-emerald-900">
-            0
-          </h2>
-        </div>
+          {recentMemories.length > 0 ? (
+            <div className="grid gap-4 md:grid-cols-3 xl:grid-cols-1">
+              {recentMemories.map((memory) => (
+                <MemoryCard key={memory.id} memory={memory} />
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-lg border border-dashed border-zinc-300 p-8 text-center">
+              <CalendarDays className="mx-auto size-9 text-zinc-300" />
+              <h3 className="mt-3 font-semibold text-stone-900">No memories yet</h3>
+              <p className="mt-1 text-sm text-zinc-500">
+                Plant your first memory to populate this dashboard.
+              </p>
+            </div>
+          )}
+        </section>
 
-        <div className="rounded-3xl bg-white p-6 shadow-lg">
-          <p className="text-sm text-stone-500">
-            Happy Memories
-          </p>
+        <section className="mg-panel p-5">
+          <div className="mb-4">
+            <p className="mg-label">Archive table</p>
+            <h2 className="mt-1 text-lg font-semibold text-stone-900">Memory registry</h2>
+          </div>
 
-          <h2 className="mt-3 text-4xl font-bold text-yellow-500">
-            🌻
-          </h2>
-        </div>
-
-        <div className="rounded-3xl bg-white p-6 shadow-lg">
-          <p className="text-sm text-stone-500">
-            Peaceful Memories
-          </p>
-
-          <h2 className="mt-3 text-4xl font-bold text-pink-500">
-            🌸
-          </h2>
-        </div>
-
-        <div className="rounded-3xl bg-white p-6 shadow-lg">
-          <p className="text-sm text-stone-500">
-            Dreams
-          </p>
-
-          <h2 className="mt-3 text-4xl font-bold text-purple-500">
-            ⭐
-          </h2>
-        </div>
+          <div className="ag-theme-quartz h-[480px] w-full">
+            <AgGridReact<MemoryRow>
+              rowData={rowData}
+              columnDefs={columnDefs}
+              defaultColDef={{
+                filter: true,
+                resizable: true,
+                sortable: true,
+              }}
+              pagination
+              paginationPageSize={8}
+              overlayNoRowsTemplate="No memories available"
+            />
+          </div>
+        </section>
       </div>
     </section>
   );

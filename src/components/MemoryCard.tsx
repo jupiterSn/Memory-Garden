@@ -1,0 +1,90 @@
+import { CalendarDays, Image, Play, Trash2 } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import type { Memory } from "@/models/memory";
+
+type MemoryCardProps = {
+  memory: Memory;
+  onDelete?: (id: number) => void;
+};
+
+const emotionStyles: Record<Memory["emotion"], string> = {
+  happy: "bg-amber-100 text-amber-800",
+  peaceful: "bg-cyan-100 text-cyan-800",
+  nostalgic: "bg-pink-100 text-pink-600",
+  dream: "bg-violet-100 text-violet-800",
+  milestone: "bg-emerald-100 text-emerald-800",
+};
+
+function MemoryCard({ memory, onDelete }: MemoryCardProps) {
+  return (
+    <article className="mg-panel overflow-hidden transition hover:-translate-y-0.5 hover:shadow-md">
+      <div className="relative aspect-[16/10] bg-zinc-100">
+        {memory.mediaUrl && memory.mediaType === "image" && (
+          <img
+            src={memory.mediaUrl}
+            alt={memory.title}
+            className="h-full w-full object-cover"
+          />
+        )}
+
+        {memory.mediaUrl && memory.mediaType === "video" && (
+          <video
+            src={memory.mediaUrl}
+            controls
+            className="h-full w-full object-cover"
+          />
+        )}
+
+        {!memory.mediaUrl && (
+          <div className="flex h-full items-center justify-center">
+            <Image className="size-10 text-zinc-300" />
+          </div>
+        )}
+
+        <span
+          className={`absolute left-3 top-3 rounded-md px-2 py-1 text-xs font-semibold capitalize ${emotionStyles[memory.emotion]}`}
+        >
+          {memory.emotion}
+        </span>
+
+        {memory.mediaType === "video" && (
+          <span className="absolute right-3 top-3 grid size-8 place-items-center rounded-full bg-pink-500/85 text-white">
+            <Play className="size-4" />
+          </span>
+        )}
+      </div>
+
+      <div className="space-y-4 p-4">
+        <div>
+          <div className="mb-2 flex items-center gap-2 text-xs font-medium text-zinc-500">
+            <CalendarDays className="size-3.5" />
+            {memory.date}
+          </div>
+          <h2 className="line-clamp-1 text-base font-semibold text-stone-900">
+            {memory.title}
+          </h2>
+          <p className="mt-2 line-clamp-3 text-sm leading-6 text-zinc-600">
+            {memory.description}
+          </p>
+        </div>
+
+        {onDelete && (
+          <div className="flex justify-end border-t border-zinc-100 pt-3">
+            <Button
+              type="button"
+              variant="destructive"
+              size="sm"
+              onClick={() => onDelete(memory.id)}
+            >
+              <Trash2 className="size-3.5" />
+              Delete
+            </Button>
+          </div>
+        )}
+      </div>
+    </article>
+  );
+}
+
+export default MemoryCard;

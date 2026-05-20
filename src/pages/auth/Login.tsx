@@ -1,98 +1,123 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useState, type FormEvent } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Flower2, Lock, Mail } from "lucide-react";
+import { toast } from "sonner";
 
+import AuthGardenPanel from "@/components/AuthGardenPanel";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import wisteriaAuth from "@/assets/wisteria-auth.png";
 
 function Login() {
   const navigate = useNavigate();
-
   const { login } = useAuth();
 
   const [email, setEmail] = useState("");
-  const [password, setPassword] =
-    useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const [loading, setLoading] =
-    useState(false);
-
-  const handleSubmit = async (
-    e: React.FormEvent<HTMLFormElement>
-  ) => {
-    e.preventDefault();
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
     try {
       setLoading(true);
-
       await login(email, password);
-
+      toast.success("Welcome back");
       navigate("/dashboard");
     } catch (error) {
       console.error(error);
-
-      alert("Login failed");
+      toast.error("Login failed", {
+        description: "Check your email and password, then try again.",
+      });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <section className="flex min-h-screen items-center justify-center bg-emerald-50 px-6">
-      <div className="w-full max-w-md rounded-3xl bg-white p-10 shadow-xl">
-        <h1 className="mb-2 text-4xl font-bold text-emerald-900">
-          Welcome Back 🌿
-        </h1>
+    <section className="relative isolate grid min-h-screen overflow-hidden bg-pink-50 lg:grid-cols-[0.9fr_1.1fr]">
+      <img
+        src={wisteriaAuth}
+        alt="Wisteria tree garden"
+        className="absolute inset-0 -z-20 h-full w-full object-cover object-center"
+      />
+      <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(255,248,251,0.72)_0%,rgba(255,248,251,0.44)_42%,rgba(255,248,251,0.14)_100%)]" />
+      <div className="absolute inset-0 -z-10 bg-white/5 backdrop-blur-[0.5px]" />
 
-        <p className="mb-8 text-stone-500">
-          Login to your Memory Garden
-        </p>
-
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-5"
-        >
-          <input
-            type="email"
-            placeholder="Email"
-            required
-            value={email}
-            onChange={(e) =>
-              setEmail(e.target.value)
-            }
-            className="w-full rounded-2xl border border-emerald-200 px-4 py-3"
-          />
-
-          <input
-            type="password"
-            placeholder="Password"
-            required
-            value={password}
-            onChange={(e) =>
-              setPassword(e.target.value)
-            }
-            className="w-full rounded-2xl border border-emerald-200 px-4 py-3"
-          />
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-2xl bg-emerald-700 px-6 py-4 font-semibold text-white"
-          >
-            {loading
-              ? "Logging in..."
-              : "Login"}
-          </button>
-        </form>
-
-        <p className="mt-6 text-center text-sm text-stone-500">
-          Don’t have an account?{" "}
-          <Link
-            to="/signup"
-            className="font-semibold text-emerald-700"
-          >
-            Signup
+      <div className="relative z-10 flex items-center justify-center px-6 py-12">
+        <div className="w-full max-w-md">
+          <Link to="/" className="mb-8 inline-flex items-center gap-3">
+            <span className="grid size-10 place-items-center rounded-xl bg-pink-100 text-pink-500">
+              <Flower2 className="size-5" />
+            </span>
+            <span className="font-semibold tracking-tight text-stone-900">
+              Memory Garden
+            </span>
           </Link>
-        </p>
+
+          <div className="mg-panel bg-white/62 p-6 shadow-xl shadow-pink-100/50 backdrop-blur-md">
+            <p className="mg-label">Login</p>
+            <h1 className="mt-2 text-3xl font-semibold tracking-tight text-stone-900">
+              Welcome back
+            </h1>
+            <p className="mt-2 text-sm text-zinc-500">
+              Sign in to continue curating your private archive.
+            </p>
+
+            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+              <label className="block">
+                <span className="mg-label">Email</span>
+                <div className="relative mt-2">
+                  <Mail className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-zinc-400" />
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    className="mg-input pl-9"
+                    placeholder="you@example.com"
+                  />
+                </div>
+              </label>
+
+              <label className="block">
+                <span className="mg-label">Password</span>
+                <div className="relative mt-2">
+                  <Lock className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-zinc-400" />
+                  <input
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    className="mg-input pl-9"
+                    placeholder="Your password"
+                  />
+                </div>
+              </label>
+
+              <Button
+                type="submit"
+                disabled={loading}
+                className="garden-button h-11 w-full"
+              >
+                {loading ? "Signing in..." : "Login"}
+              </Button>
+            </form>
+
+            <p className="mt-6 text-center text-sm text-zinc-500">
+              Do not have an account?{" "}
+              <Link to="/signup" className="font-semibold text-pink-500">
+                Create one
+              </Link>
+            </p>
+          </div>
+        </div>
       </div>
+
+      <AuthGardenPanel
+        eyebrow="Under the wisteria"
+        title="Return to a quiet garden made for the moments you keep close."
+      />
     </section>
   );
 }

@@ -1,47 +1,20 @@
-import {
-  createContext,
-  useState,
-  type ReactNode,
-} from "react";
+import { useState, type ReactNode } from "react";
 
 import apiClient from "@/api/apiClient";
-
-type User = {
-  id: number;
-  name: string;
-  email: string;
-};
-
-type AuthContextType = {
-  user: User | null;
-  token: string | null;
-  isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  signup: (
-    name: string,
-    email: string,
-    password: string
-  ) => Promise<void>;
-  logout: () => void;
-};
-
-const AuthContext = createContext<AuthContextType | null>(null);
+import { AuthContext, type User } from "@/context/auth-context";
 
 type AuthProviderProps = {
   children: ReactNode;
 };
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [token, setToken] = useState<string | null>(() => {
-    return localStorage.getItem("memory-garden-token");
-  });
+  const [token, setToken] = useState<string | null>(() =>
+    localStorage.getItem("memory-garden-token")
+  );
 
   const [user, setUser] = useState<User | null>(() => {
     const savedUser = localStorage.getItem("memory-garden-user");
-
-    if (!savedUser) return null;
-
-    return JSON.parse(savedUser);
+    return savedUser ? JSON.parse(savedUser) : null;
   });
 
   const isAuthenticated = Boolean(token && user);
@@ -56,20 +29,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const receivedUser = response.data.user;
 
     localStorage.setItem("memory-garden-token", receivedToken);
-    localStorage.setItem(
-      "memory-garden-user",
-      JSON.stringify(receivedUser)
-    );
+    localStorage.setItem("memory-garden-user", JSON.stringify(receivedUser));
 
     setToken(receivedToken);
     setUser(receivedUser);
   };
 
-  const signup = async (
-    name: string,
-    email: string,
-    password: string
-  ) => {
+  const signup = async (name: string, email: string, password: string) => {
     const response = await apiClient.post("/auth/signup", {
       name,
       email,
@@ -80,10 +46,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const receivedUser = response.data.user;
 
     localStorage.setItem("memory-garden-token", receivedToken);
-    localStorage.setItem(
-      "memory-garden-user",
-      JSON.stringify(receivedUser)
-    );
+    localStorage.setItem("memory-garden-user", JSON.stringify(receivedUser));
 
     setToken(receivedToken);
     setUser(receivedUser);
@@ -112,4 +75,3 @@ export function AuthProvider({ children }: AuthProviderProps) {
     </AuthContext.Provider>
   );
 }
-export { AuthContext };

@@ -1,14 +1,46 @@
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 
 import users from "../data/users.js";
+import {
+  checkRateLimit,
+  checkTwoFactor,
+  createAuthToken,
+  createSession,
+  detectAnomaly,
+  preAuthChecks,
+  recordSecurityEvent,
+  recordSuccessfulLogin,
+  verifyCaptcha,
+} from "../services/securityService.js";
+import { normalizeEmail, sanitizeUser } from "../utils/securityUtils.js";
 
 export const signup = async (req, res) => {
   try {
     const { name, email, password } = req.body;
+    const normalizedEmail = normalizeEmail(email);
+
+    if (!name || !normalizedEmail || !password) {
+      return res.status(400).json({
+        message: "Name, email, and password are required",
+      });
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({
+        message: "Password must be at least 8 characters",
+      });
+    }
+
+    const captcha = await verifyCaptcha(req);
+
+    if (!captcha.allowed) {
+      return res.status(403).json({
+        message: captcha.message,
+      });
+    }
 
     const existingUser = users.find(
-      (user) => user.email === email
+      (user) => user.email === normalizedEmail
     );
 
     if (existingUser) {
@@ -23,33 +55,35 @@ export const signup = async (req, res) => {
     const newUser = {
       id: Date.now(),
       name,
-      email,
+      email: normalizedEmail,
       password: hashedPassword,
+      role: "user",
+      status: "active",
+      createdAt: new Date().toISOString(),
+      lastLoginAt: null,
+      trustedDevices: [],
+      userInvalidatedAt: 0,
+      failedLoginCount: 0,
+      requiresTwoFactor: false,
     };
 
     users.push(newUser);
 
-    const token = jwt.sign(
-      {
-        id: newUser.id,
-        email: newUser.email,
-      },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "7d",
-      }
-    );
+    const session = createSession(req, newUser);
+    const token = createAuthToken(newUser, session);
+
+    recordSuccessfulLogin(newUser, session);
 
     res.status(201).json({
       token,
-
-      user: {
-        id: newUser.id,
-        name: newUser.name,
-        email: newUser.email,
+      user: sanitizeUser(newUser),
+      session: {
+        id: session.id,
+        createdAt: session.createdAt,
       },
     });
   } catch (error) {
+    console.error(error);
     res.status(500).json({
       message: "Signup failed",
     });
@@ -58,13 +92,42 @@ export const signup = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, twoFactorCode } = req.body;
+    const normalizedEmail = normalizeEmail(email);
+
+    const rateLimit = checkRateLimit(req, normalizedEmail);
+
+    if (!rateLimit.allowed) {
+      return res.status(429).json({
+        message: rateLimit.message,
+      });
+    }
+
+    const captcha = await verifyCaptcha(req);
+
+    if (!captcha.allowed) {
+      return res.status(403).json({
+        message: captcha.message,
+      });
+    }
 
     const user = users.find(
-      (user) => user.email === email
+      (candidate) => candidate.email === normalizedEmail
     );
 
+    const preAuth = preAuthChecks(req, user);
+
+    if (!preAuth.allowed) {
+      return res.status(403).json({
+        message: preAuth.message,
+      });
+    }
+
     if (!user) {
+      recordSecurityEvent("USER_LOOKUP_MISS", {
+        email: normalizedEmail,
+      });
+
       return res.status(400).json({
         message: "Invalid credentials",
       });
@@ -77,32 +140,40 @@ export const login = async (req, res) => {
       );
 
     if (!passwordMatch) {
+      user.failedLoginCount = (user.failedLoginCount || 0) + 1;
+      detectAnomaly(req, user);
+
       return res.status(400).json({
         message: "Invalid credentials",
       });
     }
 
-    const token = jwt.sign(
-      {
-        id: user.id,
-        email: user.email,
-      },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "7d",
-      }
-    );
+    const twoFactor = checkTwoFactor(user, twoFactorCode);
+
+    if (!twoFactor.allowed) {
+      return res.status(403).json({
+        message: twoFactor.message,
+        twoFactorRequired: true,
+      });
+    }
+
+    const anomaly = detectAnomaly(req, user);
+    const session = createSession(req, user);
+    const token = createAuthToken(user, session);
+
+    recordSuccessfulLogin(user, session);
 
     res.json({
       token,
-
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
+      user: sanitizeUser(user),
+      session: {
+        id: session.id,
+        createdAt: session.createdAt,
+        trusted: !anomaly.flagged,
       },
     });
   } catch (error) {
+    console.error(error);
     res.status(500).json({
       message: "Login failed",
     });

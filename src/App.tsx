@@ -1,127 +1,95 @@
+import { useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
-import Navbar from "@/components/Navbar";
-
 import Home from "@/pages/Home";
-import Garden from "@/pages/Garden";
-import Timeline from "@/pages/Timeline";
-import PlantMemory from "@/pages/PlantMemory";
-
 import Login from "@/pages/auth/Login";
 import Signup from "@/pages/auth/Signup";
 
 import Dashboard from "@/pages/main/Dashboard";
+import GardenHome from "@/pages/main/GardenHome";
+import PlantMemory from "@/pages/main/PlantMemory";
+import Garden from "@/pages/main/Garden";
+import Timeline from "@/pages/main/Timeline";
+import Profile from "@/pages/main/Profile";
+import Settings from "@/pages/main/Settings";
+import Admin from "@/pages/main/Admin";
 
+import MainLayout from "@/layouts/MainLayout";
 import ProtectedRoute from "@/routes/ProtectedRoute";
 
 import type { Memory } from "@/models/memory";
 
-import { useState, useEffect } from "react";
-
 function App() {
   const [memories, setMemories] = useState<Memory[]>(() => {
-    const savedMemories = localStorage.getItem(
-      "memory-garden-memories"
-    );
-
-    if (!savedMemories) {
-      return [];
-    }
-
-    return JSON.parse(savedMemories);
+    const savedMemories = localStorage.getItem("memory-garden-memories");
+    return savedMemories ? JSON.parse(savedMemories) : [];
   });
 
   useEffect(() => {
-    localStorage.setItem(
-      "memory-garden-memories",
-      JSON.stringify(memories)
-    );
+    try {
+      localStorage.setItem(
+        "memory-garden-memories",
+        JSON.stringify(memories)
+      );
+    } catch (error) {
+      console.error("Unable to save memories locally", error);
+    }
   }, [memories]);
 
   const addMemory = (memory: Memory) => {
-    setMemories((currentMemories) => [
-      ...currentMemories,
-      memory,
-    ]);
+    setMemories((currentMemories) => [...currentMemories, memory]);
   };
 
   const deleteMemory = (id: number) => {
     setMemories((currentMemories) =>
-      currentMemories.filter(
-        (memory) => memory.id !== id
-      )
+      currentMemories.filter((memory) => memory.id !== id)
     );
   };
 
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-emerald-50 text-stone-900">
-        <Navbar />
+      <Routes>
+        <Route path="/" element={<Home />} />
 
-        <main>
-          <Routes>
-            
-            {/* PUBLIC ROUTES */}
+        <Route path="/login" element={<Login />} />
 
-            <Route path="/" element={<Home />} />
+        <Route path="/signup" element={<Signup />} />
 
-            <Route path="/login" element={<Login />} />
+        <Route
+          element={
+            <ProtectedRoute>
+              <MainLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/dashboard" element={<Dashboard memories={memories} />} />
 
-            <Route
-              path="/signup"
-              element={<Signup />}
-            />
+          <Route path="/app" element={<GardenHome />} />
 
-            
-            {/* PROTECTED ROUTES */}
+          <Route
+            path="/plant"
+            element={<PlantMemory addMemory={addMemory} />}
+          />
 
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
+          <Route
+            path="/garden"
+            element={
+              <Garden memories={memories} deleteMemory={deleteMemory} />
+            }
+          />
 
-            <Route
-              path="/plant"
-              element={
-                <ProtectedRoute>
-                  <PlantMemory
-                    addMemory={addMemory}
-                  />
-                </ProtectedRoute>
-              }
-            />
+          <Route
+            path="/timeline"
+            element={<Timeline memories={memories} />}
+          />
 
-            <Route
-              path="/garden"
-              element={
-                <ProtectedRoute>
-                  <Garden
-                    memories={memories}
-                    deleteMemory={
-                      deleteMemory
-                    }
-                  />
-                </ProtectedRoute>
-              }
-            />
+          <Route path="/profile" element={<Profile />} />
 
-            <Route
-              path="/timeline"
-              element={
-                <ProtectedRoute>
-                  <Timeline
-                    memories={memories}
-                  />
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-        </main>
-      </div>
+          <Route path="/settings" element={<Settings />} />
+
+          <Route path="/admin" element={<Admin />} />
+        </Route>
+      </Routes>
     </BrowserRouter>
   );
 }
