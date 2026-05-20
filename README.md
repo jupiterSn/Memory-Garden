@@ -83,6 +83,20 @@ The frontend expects the API at:
 http://localhost:5000/api
 ```
 
+## Email Delivery Setup
+
+Memory Garden sends confirmation emails through Resend when `RESEND_API_KEY` is configured.
+
+Add these values to `memory-garden-backend/.env`:
+
+```text
+FRONTEND_URL=http://localhost:5173
+EMAIL_FROM=Memory Garden <onboarding@resend.dev>
+RESEND_API_KEY=your_resend_api_key
+```
+
+For a real domain, replace `EMAIL_FROM` with a verified sender domain in Resend.
+
 ## Security Features
 
 Memory Garden includes a layered authentication and session security design:

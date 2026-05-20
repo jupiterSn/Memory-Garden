@@ -38,7 +38,7 @@ The backend supports Turnstile through `CLOUDFLARE_TURNSTILE_SECRET`. In develop
 
 ## Email Confirmation
 
-Signup creates an unverified account and an email verification token. The user must confirm the token through `/verify-email/:token` before login is allowed. In development, the backend returns the verification URL and stores a message in an in-memory outbox. In production, configure an email delivery provider through `EMAIL_WEBHOOK_URL` or replace the email service with SMTP/provider-specific delivery.
+Signup creates an unverified account and an email verification token. The user must confirm the token through `/verify-email/:token` before login is allowed. The backend sends email through Resend when `RESEND_API_KEY` is configured. In development, if no provider key is present, the backend also returns the verification URL so the flow can be demonstrated locally.
 
 ## Device Trust
 
