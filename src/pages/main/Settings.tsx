@@ -1,66 +1,52 @@
-import {
-  Bell,
-  Cloud,
-  Database,
-  Eye,
-  Lock,
-  Moon,
-  Palette,
-  ShieldCheck,
-} from "lucide-react";
+import { useState, type FormEvent } from "react";
+import { Bell, Eye, Lock, Moon, Palette, Save, ShieldCheck } from "lucide-react";
+import { toast } from "sonner";
 
-const settings = [
-  {
-    title: "Garden ambience",
-    description: "Petals, wisteria motion, and soft backgrounds keep the app calm.",
-    icon: Palette,
-    status: "Enabled",
-  },
-  {
-    title: "Memory privacy",
-    description: "Admins can manage accounts but cannot inspect memories.",
-    icon: Lock,
-    status: "Protected",
-  },
-  {
-    title: "Media persistence",
-    description: "Uploaded images stay with saved memories in this browser.",
-    icon: Database,
-    status: "Local",
-  },
-  {
-    title: "Gentle reminders",
-    description: "Notification surfaces are ready for future garden reminders.",
-    icon: Bell,
-    status: "Ready",
-  },
-  {
-    title: "Low-light comfort",
-    description: "A future theme option can reduce brightness for evening use.",
-    icon: Moon,
-    status: "Planned",
-  },
-  {
-    title: "Account safety",
-    description: "Rate limiting, session caps, and device checks guard sign-in.",
-    icon: ShieldCheck,
-    status: "Active",
-  },
-  {
-    title: "Cloud challenge",
-    description: "Cloudflare Turnstile support is wired for production secrets.",
-    icon: Cloud,
-    status: "Configured",
-  },
-  {
-    title: "Private viewing",
-    description: "The profile, admin, and garden areas are protected routes.",
-    icon: Eye,
-    status: "On",
-  },
-];
+import apiClient from "@/api/apiClient";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 
 function Settings() {
+  const { logout } = useAuth();
+  const [preferences, setPreferences] = useState({
+    petals: true,
+    reminders: true,
+    privateMode: true,
+    lowLight: false,
+  });
+  const [passwords, setPasswords] = useState({
+    currentPassword: "",
+    newPassword: "",
+  });
+
+  const savePreferences = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    try {
+      await apiClient.patch("/account/preferences", preferences);
+      toast.success("Settings saved");
+    } catch (error) {
+      console.error(error);
+      toast.error("Settings could not be saved");
+    }
+  };
+
+  const changePassword = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    try {
+      await apiClient.patch("/account/password", passwords);
+      toast.success("Password updated", {
+        description: "Please log in again with your new password.",
+      });
+      logout();
+      window.location.href = "/login";
+    } catch (error) {
+      console.error(error);
+      toast.error("Password could not be changed");
+    }
+  };
+
   return (
     <section className="space-y-6">
       <div className="mg-panel p-6">
@@ -69,32 +55,87 @@ function Settings() {
           Settings
         </h1>
         <p className="mt-3 max-w-2xl text-sm leading-6 text-stone-600">
-          Configure the garden experience, privacy posture, and account safety
-          features that shape Memory Garden.
+          Control the garden experience, privacy posture, and account security.
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {settings.map((setting) => {
-          const Icon = setting.icon;
+      <div className="grid gap-6 xl:grid-cols-[1fr_420px]">
+        <form onSubmit={savePreferences} className="mg-panel p-6">
+          <h2 className="text-lg font-semibold text-stone-900">Garden preferences</h2>
+          <div className="mt-5 grid gap-4 md:grid-cols-2">
+            {[
+              { key: "petals", label: "Petal animation", icon: Palette },
+              { key: "reminders", label: "Gentle reminders", icon: Bell },
+              { key: "privateMode", label: "Private viewing", icon: Eye },
+              { key: "lowLight", label: "Low-light comfort", icon: Moon },
+            ].map((setting) => {
+              const Icon = setting.icon;
+              const key = setting.key as keyof typeof preferences;
 
-          return (
-            <div key={setting.title} className="mg-panel p-5">
-              <div className="flex items-center justify-between">
-                <span className="grid size-10 place-items-center rounded-xl bg-pink-50 text-pink-500">
-                  <Icon className="size-5" />
-                </span>
-                <span className="rounded-full bg-white/80 px-2.5 py-1 text-xs font-semibold text-stone-500">
-                  {setting.status}
-                </span>
-              </div>
-              <h2 className="mt-5 font-semibold text-stone-900">{setting.title}</h2>
-              <p className="mt-2 text-sm leading-6 text-stone-500">
-                {setting.description}
-              </p>
+              return (
+                <label key={setting.key} className="flex cursor-pointer items-center justify-between rounded-2xl border border-pink-100 bg-white/70 p-4">
+                  <span className="flex items-center gap-3 text-sm font-semibold text-stone-700">
+                    <Icon className="size-4 text-pink-400" />
+                    {setting.label}
+                  </span>
+                  <input
+                    type="checkbox"
+                    checked={preferences[key]}
+                    onChange={(event) =>
+                      setPreferences({ ...preferences, [key]: event.target.checked })
+                    }
+                    className="size-5 accent-pink-300"
+                  />
+                </label>
+              );
+            })}
+          </div>
+          <Button className="garden-button mt-5 h-11 px-5">
+            <Save className="size-4" />
+            Save settings
+          </Button>
+        </form>
+
+        <form onSubmit={changePassword} className="mg-panel p-6">
+          <div className="flex items-center gap-3">
+            <span className="grid size-10 place-items-center rounded-xl bg-emerald-50 text-emerald-700">
+              <ShieldCheck className="size-5" />
+            </span>
+            <div>
+              <h2 className="font-semibold text-stone-900">Change password</h2>
+              <p className="text-sm text-stone-500">Changing it revokes active sessions.</p>
             </div>
-          );
-        })}
+          </div>
+
+          <div className="mt-5 space-y-4">
+            <label className="block">
+              <span className="mg-label">Current password</span>
+              <input
+                type="password"
+                className="mg-input mt-2"
+                value={passwords.currentPassword}
+                onChange={(event) =>
+                  setPasswords({ ...passwords, currentPassword: event.target.value })
+                }
+              />
+            </label>
+            <label className="block">
+              <span className="mg-label">New password</span>
+              <input
+                type="password"
+                className="mg-input mt-2"
+                value={passwords.newPassword}
+                onChange={(event) =>
+                  setPasswords({ ...passwords, newPassword: event.target.value })
+                }
+              />
+            </label>
+            <Button className="h-11 w-full rounded-full" variant="destructive">
+              <Lock className="size-4" />
+              Update password
+            </Button>
+          </div>
+        </form>
       </div>
     </section>
   );

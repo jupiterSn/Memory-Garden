@@ -69,12 +69,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setUser(null);
   };
 
+  const updateUser = (updatedUser: User) => {
+    localStorage.setItem("memory-garden-user", JSON.stringify(updatedUser));
+    setUser(updatedUser);
+  };
+
   return (
     <AuthContext.Provider
       value={{
         user,
         token,
         isAuthenticated,
+        updateUser,
         login,
         signup,
         logout,

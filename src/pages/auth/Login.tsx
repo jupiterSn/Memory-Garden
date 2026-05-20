@@ -43,6 +43,13 @@ function Login() {
       const response = error instanceof AxiosError ? error.response?.data : null;
 
       if (response?.emailVerificationRequired) {
+        if (response.verificationUrl) {
+          localStorage.setItem(
+            "memory-garden-pending-verification-url",
+            response.verificationUrl
+          );
+        }
+
         toast.error("Email confirmation needed", {
           description: "Open the verification link sent to your email.",
         });

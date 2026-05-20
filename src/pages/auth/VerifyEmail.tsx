@@ -15,6 +15,7 @@ function VerifyEmail() {
     const verify = async () => {
       try {
         await apiClient.get(`/auth/verify-email/${token}`);
+        localStorage.removeItem("memory-garden-pending-verification-url");
         setStatus("success");
         setMessage("Your email is confirmed. You can now log in.");
       } catch (error) {
