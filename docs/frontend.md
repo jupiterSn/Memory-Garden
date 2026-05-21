@@ -15,6 +15,8 @@
 
 The fake authentication database is in `src/data/mockAuth.ts`.
 
+Signup creates the account in the fake database, remembers the email, and sends the user back to `/login` instead of opening the dashboard immediately.
+
 ## Routing
 
 Public routes:
@@ -78,3 +80,7 @@ The dashboard uses AG Grid to display memory data in a filterable, sortable regi
 - Session id generation in the browser
 - Admin session revocation demo
 - Admin metadata privacy: admins cannot see memory details
+
+## Theme Preferences
+
+The settings page stores garden preferences in browser storage. Low-light comfort changes the protected app shell immediately and persists after refresh.

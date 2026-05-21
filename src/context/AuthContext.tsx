@@ -33,18 +33,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   const signup = async (name: string, email: string, password: string) => {
-    const { sessionId, user: receivedUser } = signupWithDemoDatabase(
-      name,
-      email,
-      password
-    );
+    signupWithDemoDatabase(name, email, password);
 
     localStorage.setItem("memory-garden-remembered-email", email);
-    localStorage.setItem("memory-garden-token", sessionId);
-    localStorage.setItem("memory-garden-user", JSON.stringify(receivedUser));
+    localStorage.removeItem("memory-garden-token");
+    localStorage.removeItem("memory-garden-user");
 
-    setToken(sessionId);
-    setUser(receivedUser);
+    setToken(null);
+    setUser(null);
 
     return {};
   };

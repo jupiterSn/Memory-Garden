@@ -176,7 +176,6 @@ export function signupWithDemoDatabase(name: string, email: string, password: st
     throw new Error("That email is already registered.");
   }
 
-  const sessionId = createSessionId();
   const user: DemoUser = {
     id: Math.max(...users.map((savedUser) => savedUser.id), 0) + 1,
     name: name.trim(),
@@ -186,16 +185,15 @@ export function signupWithDemoDatabase(name: string, email: string, password: st
     status: "active",
     emailVerified: true,
     createdAt: new Date().toISOString(),
-    lastLoginAt: new Date().toISOString(),
+    lastLoginAt: null,
     failedLoginCount: 0,
-    activeSessions: [sessionId],
+    activeSessions: [],
     lockedUntil: null,
   };
 
   saveUsers([...users, user]);
 
   return {
-    sessionId,
     user: toPublicUser(user),
   };
 }
@@ -272,6 +270,12 @@ export function changeDemoPassword(
 
 export function saveDemoPreferences(preferences: Record<string, boolean>) {
   localStorage.setItem("memory-garden-preferences", JSON.stringify(preferences));
+}
+
+export function getDemoPreferences() {
+  return JSON.parse(localStorage.getItem("memory-garden-preferences") ?? "{}") as
+    | Record<string, boolean>
+    | undefined;
 }
 
 export function getAdminUsers(): AdminUser[] {

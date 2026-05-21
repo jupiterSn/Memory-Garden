@@ -24,8 +24,10 @@ function Signup() {
       setLoading(true);
       await signup(name, email, password);
 
-      toast.success("Account created");
-      navigate("/dashboard");
+      toast.success("Account created", {
+        description: "Please log in with your new account.",
+      });
+      navigate("/login");
     } catch (error) {
       console.error(error);
       toast.error("Signup failed", {

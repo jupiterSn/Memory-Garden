@@ -35,6 +35,8 @@ The app saves any new users, sessions, profile changes, and admin changes in `lo
 
 Each account also gets its own memory storage key, so a new user starts with a fresh empty dashboard, garden, and timeline.
 
+After signup, the user is redirected to the login page and must sign in with the new credentials.
+
 ## Important Components
 
 `AuthContext`:
@@ -92,6 +94,9 @@ Admins can manage account status but cannot read users' memory descriptions or u
 
 Per-account data:
 Each logged-in user sees only their own memories in the frontend demo.
+
+Low-light comfort:
+The settings toggle changes the app shell to a softer dark theme and saves that preference locally.
 
 ## Questions A Doctor Might Ask
 

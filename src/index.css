@@ -159,6 +159,82 @@
       linear-gradient(180deg, #fff8fb 0%, #f6fbef 42%, #eef8f5 100%);
   }
 
+  .memory-world-bg.low-light-comfort {
+    color: #f8f1e7;
+    background:
+      linear-gradient(135deg, rgba(66, 54, 87, 0.88) 0%, transparent 42%),
+      linear-gradient(235deg, rgba(46, 74, 70, 0.84) 0%, transparent 40%),
+      linear-gradient(180deg, #2f293d 0%, #263a35 48%, #222f36 100%);
+  }
+
+  .memory-world-bg.low-light-comfort .mg-panel {
+    border-color: rgba(232, 205, 218, 0.24);
+    background: rgba(47, 43, 56, 0.78);
+    box-shadow: 0 18px 48px rgba(23, 18, 28, 0.18);
+  }
+
+  .memory-world-bg.low-light-comfort .mg-label,
+  .memory-world-bg.low-light-comfort .text-pink-400,
+  .memory-world-bg.low-light-comfort .text-pink-500 {
+    color: #f2b8ca;
+  }
+
+  .memory-world-bg.low-light-comfort :is(.text-stone-900, .text-stone-800, .text-stone-700) {
+    color: #fff8f0;
+  }
+
+  .memory-world-bg.low-light-comfort :is(.text-stone-600, .text-stone-500, .text-zinc-600, .text-zinc-500) {
+    color: #d8d0c7;
+  }
+
+  .memory-world-bg.low-light-comfort :is(.bg-white\/70, .bg-white\/75, .bg-white\/80, .bg-white\/85, .bg-white\/90, .bg-white\/95, .bg-zinc-50) {
+    background-color: rgba(55, 50, 65, 0.78);
+  }
+
+  .memory-world-bg.low-light-comfort :is(.mg-input, .mg-select, .mg-date) {
+    border-color: rgba(242, 184, 202, 0.3);
+    background-color: rgba(33, 30, 40, 0.78);
+    color: #fff8f0;
+  }
+
+  .party-page-portrait {
+    position: fixed;
+    right: clamp(1rem, 4vw, 4rem);
+    bottom: clamp(1rem, 5vw, 4rem);
+    z-index: 0;
+    width: min(28vw, 360px);
+    aspect-ratio: 3 / 4;
+    border: 1px solid rgba(255, 255, 255, 0.72);
+    border-radius: 18px;
+    object-fit: cover;
+    opacity: 0.22;
+    pointer-events: none;
+    box-shadow: 0 30px 80px rgba(126, 95, 112, 0.18);
+    mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.9), transparent 94%);
+  }
+
+  .party-portrait-frieren {
+    object-position: 12% 50%;
+  }
+
+  .party-portrait-fern {
+    object-position: 44% 50%;
+  }
+
+  .party-portrait-stark {
+    object-position: 68% 50%;
+  }
+
+  .party-portrait-himmel {
+    object-position: 90% 50%;
+  }
+
+  .memory-world-bg.low-light-comfort .party-page-portrait {
+    opacity: 0.16;
+    border-color: rgba(242, 184, 202, 0.28);
+    box-shadow: 0 30px 90px rgba(10, 8, 14, 0.35);
+  }
+
   .memory-world-bg.page-bg-dashboard {
     background:
       linear-gradient(120deg, rgba(255, 239, 213, 0.7) 0%, transparent 34%),

@@ -3,27 +3,47 @@ import { Bell, Eye, Lock, Moon, Palette, Save, ShieldCheck } from "lucide-react"
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { changeDemoPassword, saveDemoPreferences } from "@/data/mockAuth";
+import {
+  changeDemoPassword,
+  getDemoPreferences,
+  saveDemoPreferences,
+} from "@/data/mockAuth";
 import { useAuth } from "@/hooks/useAuth";
+
+const defaultPreferences = {
+  petals: true,
+  reminders: true,
+  privateMode: true,
+  lowLight: false,
+};
 
 function Settings() {
   const { logout, user } = useAuth();
-  const [preferences, setPreferences] = useState({
-    petals: true,
-    reminders: true,
-    privateMode: true,
-    lowLight: false,
-  });
+  const [preferences, setPreferences] = useState(() => ({
+    ...defaultPreferences,
+    ...getDemoPreferences(),
+  }));
   const [passwords, setPasswords] = useState({
     currentPassword: "",
     newPassword: "",
   });
+
+  const updatePreference = (key: keyof typeof preferences, value: boolean) => {
+    const updatedPreferences = { ...preferences, [key]: value };
+    setPreferences(updatedPreferences);
+
+    if (key === "lowLight") {
+      saveDemoPreferences(updatedPreferences);
+      window.dispatchEvent(new Event("memory-garden-preferences-updated"));
+    }
+  };
 
   const savePreferences = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     try {
       saveDemoPreferences(preferences);
+      window.dispatchEvent(new Event("memory-garden-preferences-updated"));
       toast.success("Settings saved");
     } catch (error) {
       console.error(error);
@@ -87,9 +107,7 @@ function Settings() {
                   <input
                     type="checkbox"
                     checked={preferences[key]}
-                    onChange={(event) =>
-                      setPreferences({ ...preferences, [key]: event.target.checked })
-                    }
+                    onChange={(event) => updatePreference(key, event.target.checked)}
                     className="size-5 accent-pink-300"
                   />
                 </label>
