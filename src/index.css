@@ -137,7 +137,8 @@
 
 @layer components {
   .mg-panel {
-    @apply rounded-xl border border-pink-100/80 bg-white/80 shadow-sm shadow-pink-100/70 backdrop-blur;
+    @apply rounded-xl border border-pink-100/70 shadow-sm shadow-pink-100/70 backdrop-blur;
+    background: rgba(255, 255, 255, 0.58);
   }
 
   .memory-world-bg {
@@ -169,7 +170,7 @@
 
   .memory-world-bg.low-light-comfort .mg-panel {
     border-color: rgba(232, 205, 218, 0.24);
-    background: rgba(47, 43, 56, 0.78);
+    background: rgba(47, 43, 56, 0.58);
     box-shadow: 0 18px 48px rgba(23, 18, 28, 0.18);
   }
 
@@ -202,12 +203,12 @@
     right: clamp(1rem, 4vw, 4rem);
     bottom: clamp(1rem, 5vw, 4rem);
     z-index: 0;
-    width: min(28vw, 360px);
+    width: min(34vw, 430px);
     aspect-ratio: 3 / 4;
     border: 1px solid rgba(255, 255, 255, 0.72);
     border-radius: 18px;
     object-fit: cover;
-    opacity: 0.22;
+    opacity: 0.34;
     pointer-events: none;
     box-shadow: 0 30px 80px rgba(126, 95, 112, 0.18);
     mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.9), transparent 94%);
@@ -230,7 +231,7 @@
   }
 
   .memory-world-bg.low-light-comfort .party-page-portrait {
-    opacity: 0.16;
+    opacity: 0.24;
     border-color: rgba(242, 184, 202, 0.28);
     box-shadow: 0 30px 90px rgba(10, 8, 14, 0.35);
   }
@@ -312,6 +313,27 @@
     background-size:
       180px 180px,
       180px 180px;
+  }
+
+  .memory-world-bg .mg-panel {
+    background: rgba(255, 255, 255, 0.52);
+    backdrop-filter: blur(18px) saturate(1.12);
+  }
+
+  .memory-world-bg :is(.bg-white\/60, .bg-white\/70, .bg-white\/75, .bg-white\/80, .bg-white\/85, .bg-white\/90, .bg-white\/95, .bg-zinc-50, .bg-pink-50\/70, .bg-pink-50\/80) {
+    background-color: rgba(255, 255, 255, 0.42);
+  }
+
+  .memory-world-bg :is(.border-zinc-200, .border-pink-100) {
+    border-color: rgba(244, 194, 213, 0.42);
+  }
+
+  .memory-world-bg.low-light-comfort .mg-panel {
+    background: rgba(47, 43, 56, 0.56);
+  }
+
+  .memory-world-bg.low-light-comfort :is(.bg-white\/60, .bg-white\/70, .bg-white\/75, .bg-white\/80, .bg-white\/85, .bg-white\/90, .bg-white\/95, .bg-zinc-50, .bg-pink-50\/70, .bg-pink-50\/80) {
+    background-color: rgba(45, 40, 55, 0.5);
   }
 
   .mg-input {
