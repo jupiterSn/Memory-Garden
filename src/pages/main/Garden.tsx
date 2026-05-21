@@ -106,19 +106,31 @@ function Garden({ memories, deleteMemory }: GardenProps) {
 
   const handleDelete = (id: number) => {
     const targetMemory = memories.find((memory) => memory.id === id);
-    const confirmed = window.confirm(
-      `Remove "${targetMemory?.title ?? "this memory"}" from your garden?`
-    );
+    const title = targetMemory?.title ?? "this memory";
 
-    if (!confirmed) {
-      return;
-    }
-
-    deleteMemory(id);
-    toast.success("Memory gently removed from the garden");
-    setSelectedMemory((currentMemory) =>
-      currentMemory?.id === id ? null : currentMemory
-    );
+    const confirmationToast = toast.warning("Remove this memory?", {
+      description: `"${title}" will be removed from your garden.`,
+      duration: 10000,
+      action: {
+        label: "Remove",
+        onClick: () => {
+          deleteMemory(id);
+          toast.dismiss(confirmationToast);
+          toast.success("Memory gently removed from the garden");
+          setSelectedMemory((currentMemory) =>
+            currentMemory?.id === id ? null : currentMemory
+          );
+        },
+      },
+      cancel: {
+        label: "Keep",
+        onClick: () => toast.dismiss(confirmationToast),
+      },
+      actionButtonStyle: {
+        background: "#dc2626",
+        color: "#fff",
+      },
+    });
   };
 
   return (

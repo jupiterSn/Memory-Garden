@@ -99,7 +99,7 @@ Per-account data:
 Each logged-in user sees only their own memories in the frontend demo.
 
 Deletion safety:
-In the garden, clicking a memory opens details. Removing a memory uses a separate button and asks for confirmation first.
+In the garden, clicking a memory opens details. Removing a memory uses a separate button and asks for confirmation through an in-app toast.
 
 Low-light comfort:
 The settings toggle changes the whole app shell to a darker comfort theme, including sidebar, navbar, panels, buttons, and tables, and saves that preference locally.
