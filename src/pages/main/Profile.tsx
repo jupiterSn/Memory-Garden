@@ -34,20 +34,61 @@ function Profile() {
 
   const handleAvatarChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
+    event.target.value = "";
 
     if (!selectedFile) {
       return;
     }
 
     try {
-      setAvatarUrl(await readFileAsDataUrl(selectedFile));
-      toast.success("Profile picture selected", {
-        description: "Save your profile to keep this picture.",
+      const nextAvatarUrl = await readFileAsDataUrl(selectedFile);
+      const confirmationToast = toast.warning("Use this profile picture?", {
+        description: "Your profile preview will change. Save your profile to keep it.",
+        duration: 10000,
+        action: {
+          label: "Use picture",
+          onClick: () => {
+            setAvatarUrl(nextAvatarUrl);
+            toast.dismiss(confirmationToast);
+            toast.success("Profile picture selected", {
+              description: "Save your profile to keep this picture.",
+            });
+          },
+        },
+        cancel: {
+          label: "Keep current",
+          onClick: () => toast.dismiss(confirmationToast),
+        },
       });
     } catch (error) {
       console.error(error);
       toast.error("Profile picture could not be loaded");
     }
+  };
+
+  const confirmRemoveAvatar = () => {
+    const confirmationToast = toast.warning("Remove profile picture?", {
+      description: "Your profile preview will use the default icon. Save your profile to keep this change.",
+      duration: 10000,
+      action: {
+        label: "Remove",
+        onClick: () => {
+          setAvatarUrl("");
+          toast.dismiss(confirmationToast);
+          toast.success("Profile picture removed", {
+            description: "Save your profile to keep this change.",
+          });
+        },
+      },
+      cancel: {
+        label: "Keep picture",
+        onClick: () => toast.dismiss(confirmationToast),
+      },
+      actionButtonStyle: {
+        background: "#dc2626",
+        color: "#fff",
+      },
+    });
   };
 
   const saveProfile = async (event: FormEvent<HTMLFormElement>) => {
@@ -131,7 +172,7 @@ function Profile() {
                   type="button"
                   variant="outline"
                   className="h-10 rounded-full"
-                  onClick={() => setAvatarUrl("")}
+                  onClick={confirmRemoveAvatar}
                 >
                   <Trash2 className="size-4" />
                   Remove

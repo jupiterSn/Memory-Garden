@@ -74,6 +74,7 @@ The dashboard uses AG Grid to display memory data in a filterable, sortable regi
 ## Frontend Security Demonstrations
 
 - Strong password rule for signup and password changes
+- Toast confirmations before changing passwords or profile pictures
 - Login failure counter
 - One-minute account lockout after five failed login attempts
 - Disabled account check before login
@@ -89,4 +90,4 @@ The settings page stores garden preferences in browser storage. Low-light comfor
 
 ## Profile Pictures
 
-The profile page lets users add, preview, save, edit, and remove a profile picture. The image is stored as a browser data URL inside the fake user database, then reused in the sidebar and navbar.
+The profile page lets users add, preview, save, edit, and remove a profile picture after a toast confirmation. The image is stored as a browser data URL inside the fake user database, then reused in the sidebar and navbar.

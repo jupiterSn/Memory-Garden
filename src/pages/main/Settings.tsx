@@ -54,23 +54,41 @@ function Settings() {
   const changePassword = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    try {
-      if (!user) {
-        throw new Error("You must be logged in to change your password.");
-      }
+    const confirmationToast = toast.warning("Change your password?", {
+      description: "You will be sent back to login after the password changes.",
+      duration: 10000,
+      action: {
+        label: "Change",
+        onClick: () => {
+          toast.dismiss(confirmationToast);
+          try {
+            if (!user) {
+              throw new Error("You must be logged in to change your password.");
+            }
 
-      changeDemoPassword(user, passwords.currentPassword, passwords.newPassword);
-      toast.success("Password updated", {
-        description: "Please log in again with your new password.",
-      });
-      logout();
-      window.location.href = "/login";
-    } catch (error) {
-      console.error(error);
-      toast.error("Password could not be changed", {
-        description: error instanceof Error ? error.message : undefined,
-      });
-    }
+            changeDemoPassword(user, passwords.currentPassword, passwords.newPassword);
+            toast.success("Password updated", {
+              description: "Please log in again with your new password.",
+            });
+            logout();
+            window.location.href = "/login";
+          } catch (error) {
+            console.error(error);
+            toast.error("Password could not be changed", {
+              description: error instanceof Error ? error.message : undefined,
+            });
+          }
+        },
+      },
+      cancel: {
+        label: "Keep current",
+        onClick: () => toast.dismiss(confirmationToast),
+      },
+      actionButtonStyle: {
+        background: "#dc2626",
+        color: "#fff",
+      },
+    });
   };
 
   return (

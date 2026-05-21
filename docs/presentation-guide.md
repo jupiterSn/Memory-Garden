@@ -84,7 +84,7 @@ Temporary lockout:
 After five failed attempts, the account is locked for one minute.
 
 Password strength:
-Signup and password change require uppercase, lowercase, number, symbol, and at least eight characters.
+Signup and password change require uppercase, lowercase, number, symbol, and at least eight characters. Password changes ask for confirmation through an in-app toast before updating the mock account.
 
 Session tracking:
 The app creates browser session ids and tracks active sessions for the admin table.
@@ -105,7 +105,7 @@ Low-light comfort:
 The settings toggle changes the whole app shell to a darker comfort theme, including sidebar, navbar, panels, buttons, and tables, and saves that preference locally.
 
 Profile picture:
-Users can upload, edit, or remove a profile picture. It is stored in the fake local database and appears in the profile page, sidebar, and navbar.
+Users can upload, edit, or remove a profile picture after an in-app toast confirmation. It is stored in the fake local database and appears in the profile page, sidebar, and navbar.
 
 ## Questions A Doctor Might Ask
 
