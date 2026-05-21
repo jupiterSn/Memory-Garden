@@ -21,10 +21,7 @@ export type AuthContextType = {
     name: string,
     email: string,
     password: string
-  ) => Promise<{
-    emailVerificationRequired?: boolean;
-    verificationUrl?: string;
-  }>;
+  ) => Promise<void | Record<string, never>>;
   logout: () => void;
 };
 

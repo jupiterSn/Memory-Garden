@@ -32,3 +32,5 @@ Password: Admin@12345
 ## Why This Design Matters
 
 This follows the principle of least privilege. The admin can protect the system and manage access without violating user privacy.
+
+In this Web 1 version, all admin data comes from the frontend fake database in `src/data/mockAuth.ts`.

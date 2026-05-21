@@ -1,20 +1,19 @@
 # Memory Garden
 
-Memory Garden is a full-stack React and Node.js application for preserving personal memories in a calm, visual garden experience. Users can sign up, sign in, plant memories with emotions, attach media, view their memories in a garden or timeline, and manage their account through a protected workspace.
+Memory Garden is a frontend-only React application for preserving personal memories in a calm, visual garden experience. Users can sign up, sign in, plant memories with emotions, attach media, view their memories in a garden or timeline, and manage their account through a protected workspace.
+
+The project uses a fake browser database instead of a real backend. Demo users are written directly in [mockAuth.ts](C:/web/Memory-Garden/src/data/mockAuth.ts), and app state is saved in `localStorage` so the Web 1 project stays frontend-only.
 
 ## Highlights
 
 - React + TypeScript + Vite frontend
 - Tailwind CSS, shadcn/ui primitives, lucide icons, Framer Motion
 - Protected routing with Context API authentication
-- Axios API client with JWT interceptor and 401 handling
+- Fake local authentication database in code
+- Frontend security demonstrations: role checks, account status, lockout after failed logins, session ids, session revocation, password strength rules, and admin-only metadata
 - Memory creation with images/videos, local persistence, garden rendering, and timeline views
 - Dashboard with cards and AG Grid memory registry
-- Professional profile and settings surfaces
-- Admin user console for account safety without access to private memories
-- Express backend with JWT, bcrypt, security middleware, session tracking, and layered token invalidation
-- Email confirmation before first login
-- Cloudflare Turnstile-ready captcha verification
+- Profile, settings, and admin screens
 
 ## Demo Accounts
 
@@ -25,7 +24,14 @@ Email: admin@memorygarden.local
 Password: Admin@12345
 ```
 
-Regular users can be created from the signup screen.
+User:
+
+```text
+Email: user@memorygarden.local
+Password: User@12345
+```
+
+Regular users can also be created from the signup screen.
 
 ## Frontend Routes
 
@@ -43,83 +49,31 @@ Regular users can be created from the signup screen.
 /admin        Admin user safety console
 ```
 
-## Backend Routes
-
-```text
-POST /api/auth/signup
-POST /api/auth/login
-GET  /api/auth/me
-GET  /api/auth/verify-email/:token
-POST /api/auth/resend-verification
-
-GET   /api/admin/users
-PATCH /api/admin/users/:userId/status
-POST  /api/admin/users/:userId/revoke-sessions
-GET   /api/admin/security
-```
-
-Admin routes require an authenticated user with `role: "admin"`.
-
 ## Running The Project
 
-Frontend:
-
 ```bash
 npm install
 npm run dev
 ```
 
-Backend:
+No backend server is required.
 
-```bash
-cd memory-garden-backend
-npm install
-npm run dev
-```
+## Security Demo Notes
 
-The frontend expects the API at:
+Because this is a frontend-only Web 1 project, these features are demonstrations, not production security:
 
-```text
-http://localhost:5000/api
-```
+- Login checks credentials from `src/data/mockAuth.ts`
+- Protected routes redirect logged-out users
+- Admin route requires `role: "admin"`
+- Disabled users cannot log in
+- Failed login attempts are counted
+- Accounts lock for one minute after five failed attempts
+- Signup and password change require a strong password
+- Session ids are generated in the browser
+- Admins can revoke sessions and change account status
+- Admins can only see account metadata, not private memories
 
-## Email Delivery Setup
-
-Memory Garden sends confirmation emails through Resend when `RESEND_API_KEY` is configured.
-
-Add these values to `memory-garden-backend/.env`:
-
-```text
-FRONTEND_URL=http://localhost:5173
-EMAIL_FROM=Memory Garden <onboarding@resend.dev>
-RESEND_API_KEY=your_resend_api_key
-```
-
-For a real domain, replace `EMAIL_FROM` with a verified sender domain in Resend.
-
-## Security Features
-
-Memory Garden includes a layered authentication and session security design:
-
-- Rate limiting for repeated login attempts
-- Cloudflare Turnstile captcha verification hook
-- Email confirmation before login
-- User lookup before password comparison
-- Pre-auth account status checks
-- bcrypt password verification
-- Login anomaly detection
-- Device trust fingerprint checks
-- Optional 2FA check flow
-- Maximum active sessions per user
-- Session creation and tracking
-- Successful login recording
-- Four token invalidation layers:
-  - Pre-token blacklist
-  - Session-level blacklist
-  - User-level blacklist
-  - Global invalidation timestamp
-
-The current implementation uses in-memory development stores with clear service boundaries. These can be moved to MySQL tables without changing the route structure.
+For a real Web 2/backend project, password hashing, real rate limiting, database storage, secure cookies, server-side sessions, email verification, captcha, and two-factor authentication would belong on the backend.
 
 ## Documentation
 
@@ -127,7 +81,6 @@ Detailed documentation is available in [docs](./docs):
 
 - [Architecture](./docs/architecture.md)
 - [Frontend](./docs/frontend.md)
-- [Backend And Security](./docs/backend-security.md)
 - [Admin Console](./docs/admin.md)
 - [Presentation Guide](./docs/presentation-guide.md)
 
@@ -136,11 +89,4 @@ Detailed documentation is available in [docs](./docs):
 ```bash
 npm.cmd run build
 npm.cmd run lint
-```
-
-Backend syntax can be checked by starting the server:
-
-```bash
-cd memory-garden-backend
-npm.cmd start
 ```

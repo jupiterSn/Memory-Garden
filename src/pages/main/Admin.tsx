@@ -2,26 +2,18 @@ import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { Ban, Plus, RefreshCcw, ShieldAlert, ShieldCheck, Trash2, Users } from "lucide-react";
 import { toast } from "sonner";
 
-import apiClient from "@/api/apiClient";
 import { Button } from "@/components/ui/button";
+import {
+  createAdminUser,
+  deleteAdminUser,
+  getAdminUsers,
+  getSecuritySummary,
+  revokeAdminUserSessions,
+  updateAdminUserStatus,
+  type AdminUser,
+  type SecuritySummary,
+} from "@/data/mockAuth";
 import { useAuth } from "@/hooks/useAuth";
-
-type AdminUser = {
-  id: number;
-  name: string;
-  email: string;
-  role: "user" | "admin";
-  status: "active" | "disabled" | "review";
-  activeSessions: number;
-  failedLoginCount: number;
-  emailVerified?: boolean;
-};
-
-type SecuritySummary = {
-  activeSessions: number;
-  blacklistedSessions: number;
-  blacklistedUsers: number;
-};
 
 function Admin() {
   const { user } = useAuth();
@@ -41,21 +33,10 @@ function Admin() {
       return;
     }
 
-    try {
-      setLoading(true);
-      const [usersResponse, securityResponse] = await Promise.all([
-        apiClient.get("/admin/users"),
-        apiClient.get("/admin/security"),
-      ]);
-
-      setUsers(usersResponse.data.users);
-      setSecurity(securityResponse.data);
-    } catch (error) {
-      console.error(error);
-      toast.error("Admin data could not be loaded");
-    } finally {
-      setLoading(false);
-    }
+    setLoading(true);
+    setUsers(getAdminUsers());
+    setSecurity(getSecuritySummary());
+    setLoading(false);
   }, [user?.role]);
 
   useEffect(() => {
@@ -67,47 +48,39 @@ function Admin() {
     event.preventDefault();
 
     try {
-      await apiClient.post("/admin/users", newUser);
+      createAdminUser(newUser as {
+        name: string;
+        email: string;
+        password: string;
+        role: "user" | "admin";
+      });
       toast.success("Account created");
       setNewUser({ name: "", email: "", password: "", role: "user" });
-      await loadAdminData();
+      loadAdminData();
     } catch (error) {
       console.error(error);
-      toast.error("Could not create account");
+      toast.error("Could not create account", {
+        description: error instanceof Error ? error.message : undefined,
+      });
     }
   };
 
-  const updateStatus = async (targetUser: AdminUser, status: AdminUser["status"]) => {
-    try {
-      await apiClient.patch(`/admin/users/${targetUser.id}/status`, { status });
-      toast.success("User status updated");
-      await loadAdminData();
-    } catch (error) {
-      console.error(error);
-      toast.error("Status update failed");
-    }
+  const updateStatus = (targetUser: AdminUser, status: AdminUser["status"]) => {
+    updateAdminUserStatus(targetUser.id, status);
+    toast.success("User status updated");
+    loadAdminData();
   };
 
-  const revokeSessions = async (targetUser: AdminUser) => {
-    try {
-      await apiClient.post(`/admin/users/${targetUser.id}/revoke-sessions`);
-      toast.success("Sessions revoked");
-      await loadAdminData();
-    } catch (error) {
-      console.error(error);
-      toast.error("Could not revoke sessions");
-    }
+  const revokeSessions = (targetUser: AdminUser) => {
+    revokeAdminUserSessions(targetUser.id);
+    toast.success("Sessions revoked");
+    loadAdminData();
   };
 
-  const deleteUser = async (targetUser: AdminUser) => {
-    try {
-      await apiClient.delete(`/admin/users/${targetUser.id}`);
-      toast.success("Account deleted");
-      await loadAdminData();
-    } catch (error) {
-      console.error(error);
-      toast.error("Could not delete account");
-    }
+  const deleteUser = (targetUser: AdminUser) => {
+    deleteAdminUser(targetUser.id);
+    toast.success("Account deleted");
+    loadAdminData();
   };
 
   if (user?.role !== "admin") {

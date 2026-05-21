@@ -2,12 +2,12 @@ import { useState, type FormEvent } from "react";
 import { Bell, Eye, Lock, Moon, Palette, Save, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 
-import apiClient from "@/api/apiClient";
 import { Button } from "@/components/ui/button";
+import { changeDemoPassword, saveDemoPreferences } from "@/data/mockAuth";
 import { useAuth } from "@/hooks/useAuth";
 
 function Settings() {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const [preferences, setPreferences] = useState({
     petals: true,
     reminders: true,
@@ -23,7 +23,7 @@ function Settings() {
     event.preventDefault();
 
     try {
-      await apiClient.patch("/account/preferences", preferences);
+      saveDemoPreferences(preferences);
       toast.success("Settings saved");
     } catch (error) {
       console.error(error);
@@ -35,7 +35,11 @@ function Settings() {
     event.preventDefault();
 
     try {
-      await apiClient.patch("/account/password", passwords);
+      if (!user) {
+        throw new Error("You must be logged in to change your password.");
+      }
+
+      changeDemoPassword(user, passwords.currentPassword, passwords.newPassword);
       toast.success("Password updated", {
         description: "Please log in again with your new password.",
       });
@@ -43,7 +47,9 @@ function Settings() {
       window.location.href = "/login";
     } catch (error) {
       console.error(error);
-      toast.error("Password could not be changed");
+      toast.error("Password could not be changed", {
+        description: error instanceof Error ? error.message : undefined,
+      });
     }
   };
 

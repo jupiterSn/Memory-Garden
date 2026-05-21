@@ -1,7 +1,10 @@
 import { useState, type ReactNode } from "react";
 
-import apiClient from "@/api/apiClient";
 import { AuthContext, type User } from "@/context/auth-context";
+import {
+  loginWithDemoDatabase,
+  signupWithDemoDatabase,
+} from "@/data/mockAuth";
 
 type AuthProviderProps = {
   children: ReactNode;
@@ -20,45 +23,30 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const isAuthenticated = Boolean(token && user);
 
   const login = async (email: string, password: string) => {
-    const response = await apiClient.post("/auth/login", {
-      email,
-      password,
-    });
+    const { sessionId, user: receivedUser } = loginWithDemoDatabase(email, password);
 
-    const receivedToken = response.data.token;
-    const receivedUser = response.data.user;
-
-    localStorage.setItem("memory-garden-token", receivedToken);
+    localStorage.setItem("memory-garden-token", sessionId);
     localStorage.setItem("memory-garden-user", JSON.stringify(receivedUser));
 
-    setToken(receivedToken);
+    setToken(sessionId);
     setUser(receivedUser);
   };
 
   const signup = async (name: string, email: string, password: string) => {
-    const response = await apiClient.post("/auth/signup", {
+    const { sessionId, user: receivedUser } = signupWithDemoDatabase(
       name,
       email,
-      password,
-    });
-
-    const receivedToken = response.data.token;
-    const receivedUser = response.data.user;
+      password
+    );
 
     localStorage.setItem("memory-garden-remembered-email", email);
+    localStorage.setItem("memory-garden-token", sessionId);
+    localStorage.setItem("memory-garden-user", JSON.stringify(receivedUser));
 
-    if (receivedToken && receivedUser) {
-      localStorage.setItem("memory-garden-token", receivedToken);
-      localStorage.setItem("memory-garden-user", JSON.stringify(receivedUser));
+    setToken(sessionId);
+    setUser(receivedUser);
 
-      setToken(receivedToken);
-      setUser(receivedUser);
-    }
-
-    return {
-      emailVerificationRequired: response.data.emailVerificationRequired,
-      verificationUrl: response.data.verificationUrl,
-    };
+    return {};
   };
 
   const logout = () => {

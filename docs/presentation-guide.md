@@ -2,11 +2,11 @@
 
 ## Project Summary
 
-Memory Garden is a full-stack web application that lets users preserve memories as a visual garden. A user can create an account, log in, plant a memory with an emotion and optional media, then revisit those memories through a dashboard, garden, and timeline.
+Memory Garden is a frontend-only web application that lets users preserve memories as a visual garden. A user can create an account, log in, plant a memory with an emotion and optional media, then revisit those memories through a dashboard, garden, and timeline.
+
+The project intentionally does not use a real backend. It uses a fake database in the frontend because this is a Web 1/frontend course project.
 
 ## Technologies Used
-
-Frontend:
 
 - React for component-based UI
 - TypeScript for type safety
@@ -15,23 +15,31 @@ Frontend:
 - shadcn/ui primitives for reusable UI foundations
 - React Router DOM for routing
 - Context API for authentication state
-- Axios for API requests
 - Framer Motion for animation
 - AG Grid for dashboard table management
 - Sonner for toast notifications
+- `localStorage` for fake persistence in the browser
 
-Backend:
+## Fake Database
 
-- Node.js and Express for API routes
-- JWT for authentication tokens
-- bcrypt for password hashing
-- dotenv for environment variables
-- MySQL-ready architecture with current development stores
+The fake database is in `src/data/mockAuth.ts`.
+
+It includes demo credentials written in code:
+
+```text
+Admin: admin@memorygarden.local / Admin@12345
+User: user@memorygarden.local / User@12345
+```
+
+The app saves any new users, sessions, profile changes, and admin changes in `localStorage`.
 
 ## Important Components
 
 `AuthContext`:
-Controls login, signup, logout, token, and current user.
+Controls login, signup, logout, session id, and current user.
+
+`mockAuth.ts`:
+Acts like a fake database and contains the frontend-only security demo logic.
 
 `ProtectedRoute`:
 Blocks protected pages if no authenticated user exists.
@@ -49,53 +57,47 @@ Renders memories as interactive plants on a realistic garden background.
 Shows memory statistics and an AG Grid table.
 
 `Admin`:
-Allows an admin to manage accounts and sessions without seeing private memories.
+Allows an admin to manage account metadata and sessions without seeing private memories.
 
 ## Security Measures To Explain
 
-Rate limiting:
-Prevents repeated brute-force login attempts.
+Protected routes:
+Logged-out users are redirected away from dashboard, garden, profile, settings, and admin.
 
-Captcha:
-Cloudflare Turnstile can verify that the request is not automated.
+Role-based access:
+Only users with `role: "admin"` can open the admin console.
 
-Email confirmation:
-New accounts are marked unverified until the user opens the verification link. Login is blocked until email ownership is confirmed.
+Account status checks:
+Disabled accounts cannot log in.
 
-Password hashing:
-Passwords are stored as bcrypt hashes, never plaintext.
+Failed login tracking:
+The fake database counts failed login attempts.
 
-Pre-auth checks:
-The backend checks account status before creating a session.
+Temporary lockout:
+After five failed attempts, the account is locked for one minute.
 
-Anomaly detection:
-Repeated failures or suspicious request patterns are recorded as security events.
+Password strength:
+Signup and password change require uppercase, lowercase, number, symbol, and at least eight characters.
 
-Device trust:
-The backend fingerprints devices and marks new/unusual devices.
+Session tracking:
+The app creates browser session ids and tracks active sessions for the admin table.
 
-2FA:
-The backend has a two-factor check path that can be enabled per user.
-
-Max sessions:
-Users can only have a limited number of active sessions.
-
-Token blacklist:
-The backend can invalidate tokens before issue, by session, by user, or globally.
+Session revocation:
+The admin can clear a user's active sessions in the fake database.
 
 Admin privacy:
-Admins can manage accounts but cannot read users' memories or uploaded media.
+Admins can manage account status but cannot read users' memory descriptions or uploaded media.
 
 ## Questions A Doctor Might Ask
 
+Why no backend?
+Because this is a Web 1/frontend project. The fake database keeps the demo inside React and `localStorage`.
+
+Where are the usernames and passwords?
+They are written in `src/data/mockAuth.ts`, like the admin credential demo.
+
 Why use Context API?
 It gives the whole app access to authentication state without passing props through every component.
-
-Why use JWT?
-JWTs let the backend issue a signed token that the frontend can send with protected requests.
-
-Why use bcrypt?
-bcrypt is designed for password hashing and includes salting and computational cost.
 
 Why protected routes?
 They prevent unauthenticated users from opening pages such as dashboard, garden, profile, and admin.
@@ -104,7 +106,10 @@ Why AG Grid?
 It provides professional table features like sorting, filtering, pagination, and scalable data display.
 
 Can admins see memories?
-No. Admin endpoints return only account metadata and security status.
+No. The admin page only reads account metadata from the fake database.
 
-How would you make it production-ready?
-Persist users, sessions, security events, and memories in MySQL; store media in object storage or a secure upload directory; configure Cloudflare Turnstile; use HTTPS; rotate JWT secrets; and add real TOTP/email 2FA.
+Are these real security features?
+No. They are frontend demonstrations. Real security requires a backend.
+
+How would you make it production-ready in Web 2?
+Move users and sessions to a backend database, hash passwords on the server, enforce rate limits on the server, use secure cookies or server-issued tokens, add real email verification, use HTTPS, and add real two-factor authentication.

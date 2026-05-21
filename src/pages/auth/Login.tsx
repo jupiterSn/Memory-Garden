@@ -2,7 +2,6 @@ import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Check, Flower2, Lock, Mail } from "lucide-react";
 import { toast } from "sonner";
-import { AxiosError } from "axios";
 
 import AuthGardenPanel from "@/components/AuthGardenPanel";
 import { Button } from "@/components/ui/button";
@@ -19,9 +18,6 @@ function Login() {
   const [password, setPassword] = useState("");
   const [rememberEmail, setRememberEmail] = useState(() =>
     Boolean(localStorage.getItem("memory-garden-remembered-email"))
-  );
-  const [verificationUrl] = useState(() =>
-    localStorage.getItem("memory-garden-pending-verification-url")
   );
   const [loading, setLoading] = useState(false);
 
@@ -40,24 +36,11 @@ function Login() {
       navigate("/dashboard");
     } catch (error) {
       console.error(error);
-      const response = error instanceof AxiosError ? error.response?.data : null;
-
-      if (response?.emailVerificationRequired) {
-        if (response.verificationUrl) {
-          localStorage.setItem(
-            "memory-garden-pending-verification-url",
-            response.verificationUrl
-          );
-        }
-
-        toast.error("Email confirmation needed", {
-          description: "Open the verification link sent to your email.",
-        });
-        return;
-      }
-
       toast.error("Login failed", {
-        description: "Check your email and password, then try again.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Check your email and password, then try again.",
       });
     } finally {
       setLoading(false);
@@ -97,26 +80,6 @@ function Login() {
             <p className="mt-2 text-sm text-zinc-500">
               Sign in to continue curating your private archive.
             </p>
-
-            {verificationUrl && (
-              <div className="mt-5 rounded-2xl border border-pink-100 bg-pink-50/80 p-4 text-sm text-stone-600">
-                <p className="font-semibold text-stone-900">
-                  Email confirmation is waiting
-                </p>
-                <p className="mt-1 leading-6">
-                  Open the confirmation link before logging in.
-                </p>
-                <Link
-                  to={new URL(verificationUrl).pathname}
-                  className="mt-3 inline-flex font-semibold text-pink-500"
-                  onClick={() =>
-                    localStorage.removeItem("memory-garden-pending-verification-url")
-                  }
-                >
-                  Confirm email
-                </Link>
-              </div>
-            )}
 
             <form onSubmit={handleSubmit} className="mt-6 space-y-4">
               <label className="block">

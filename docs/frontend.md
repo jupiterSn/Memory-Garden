@@ -5,13 +5,15 @@
 `AuthContext` stores:
 
 - current user
-- JWT token
+- browser session id
 - authentication state
 - login function
 - signup function
 - logout function
 
 `useAuth` is a wrapper hook that ensures auth state is only consumed inside the provider.
+
+The fake authentication database is in `src/data/mockAuth.ts`.
 
 ## Routing
 
@@ -32,7 +34,7 @@ Protected routes:
 - `/settings`
 - `/admin`
 
-`ProtectedRoute` prevents unauthenticated users from entering the application shell.
+`ProtectedRoute` prevents unauthenticated users from entering the application shell. The admin page also checks that the current user has `role: "admin"`.
 
 ## UI Design
 
@@ -60,3 +62,15 @@ Images are converted into persistent browser data URLs so they remain visible af
 ## Dashboard
 
 The dashboard uses AG Grid to display memory data in a filterable, sortable registry. It also includes summary cards and recent memory previews.
+
+## Frontend Security Demonstrations
+
+- Strong password rule for signup and password changes
+- Login failure counter
+- One-minute account lockout after five failed login attempts
+- Disabled account check before login
+- Protected route guard
+- Admin-only route logic
+- Session id generation in the browser
+- Admin session revocation demo
+- Admin metadata privacy: admins cannot see memory details
