@@ -12,6 +12,7 @@ import {
   WandSparkles,
 } from "lucide-react";
 
+import frierenParty from "@/assets/frieren-party.png";
 import { useAuth } from "@/hooks/useAuth";
 
 const baseLinks = [
@@ -76,6 +77,13 @@ function Sidebar() {
           <div className="relative isolate overflow-hidden rounded-xl border border-emerald-100 bg-[linear-gradient(145deg,rgba(248,255,245,0.95),rgba(255,247,252,0.9)_54%,rgba(239,246,255,0.9))] p-4 shadow-sm shadow-emerald-100">
             <div className="absolute inset-x-0 top-0 -z-10 h-1 bg-[linear-gradient(90deg,#a7d8b8,#f7c6d7,#c8d9ff)]" />
             <div className="absolute inset-0 -z-10 bg-[repeating-linear-gradient(135deg,transparent_0_18px,rgba(255,255,255,0.38)_18px_20px)]" />
+            <div className="overflow-hidden rounded-lg border border-white/80 bg-white shadow-sm">
+              <img
+                src={frierenParty}
+                alt="Frieren's traveling party"
+                className="aspect-[4/3] w-full object-cover object-center"
+              />
+            </div>
             <div className="flex items-center gap-2 text-sm font-semibold text-stone-800">
               <WandSparkles className="size-4 text-emerald-600" />
               Frieren's traveling party
