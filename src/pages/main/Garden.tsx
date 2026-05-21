@@ -1,10 +1,13 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Plus, Search, Shovel } from "lucide-react";
+import { Plus, Search, Shovel, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 
+import MemoryDetailModal from "@/components/MemoryDetailModal";
 import { Button } from "@/components/ui/button";
 import gardenBed from "@/assets/garden-bed.png";
+import { getMemoryMedia } from "@/lib/memoryMedia";
 import type { Memory } from "@/models/memory";
 
 type GardenProps = {
@@ -24,18 +27,7 @@ const plantPositions = [
 ];
 
 function PlantVisual({ memory }: { memory: Memory }) {
-  const mediaItems =
-    memory.mediaItems ??
-    (memory.mediaUrl && memory.mediaType
-      ? [
-          {
-            id: memory.id,
-            url: memory.mediaUrl,
-            type: memory.mediaType,
-            name: memory.title,
-          },
-        ]
-      : []);
+  const mediaItems = getMemoryMedia(memory);
   const imageMedia = mediaItems.find((item) => item.type === "image");
   const imageBloom =
     imageMedia ? (
@@ -110,9 +102,23 @@ function PlantVisual({ memory }: { memory: Memory }) {
 }
 
 function Garden({ memories, deleteMemory }: GardenProps) {
+  const [selectedMemory, setSelectedMemory] = useState<Memory | null>(null);
+
   const handleDelete = (id: number) => {
+    const targetMemory = memories.find((memory) => memory.id === id);
+    const confirmed = window.confirm(
+      `Remove "${targetMemory?.title ?? "this memory"}" from your garden?`
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
     deleteMemory(id);
     toast.success("Memory gently removed from the garden");
+    setSelectedMemory((currentMemory) =>
+      currentMemory?.id === id ? null : currentMemory
+    );
   };
 
   return (
@@ -179,24 +185,46 @@ function Garden({ memories, deleteMemory }: GardenProps) {
                 className={`group absolute ${plantPositions[index % plantPositions.length]} -translate-x-1/2`}
               >
                 <div className="flex flex-col items-center">
-                  <PlantVisual memory={memory} />
                   <button
                     type="button"
-                    onClick={() => handleDelete(memory.id)}
+                    onClick={() => setSelectedMemory(memory)}
+                    className="transition hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-pink-100/70"
+                    title="Open this memory"
+                  >
+                    <PlantVisual memory={memory} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedMemory(memory)}
                     className="mt-2 max-w-40 rounded-xl border border-white/80 bg-white/85 px-3 py-2 text-center text-xs font-semibold text-stone-700 shadow-sm shadow-emerald-100 backdrop-blur transition hover:bg-pink-50 hover:text-pink-500"
-                    title="Click to remove this planted memory"
+                    title="Open this memory"
                   >
                     <span className="block truncate">{memory.title}</span>
                     <span className="mt-0.5 block text-[10px] font-medium capitalize text-stone-500">
                       {memory.emotion}
                     </span>
                   </button>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    className="mt-2 bg-white/80"
+                    onClick={() => handleDelete(memory.id)}
+                  >
+                    <Trash2 className="size-3.5" />
+                    Remove
+                  </Button>
                 </div>
               </motion.article>
             ))}
           </div>
         </div>
       )}
+
+      <MemoryDetailModal
+        memory={selectedMemory}
+        onClose={() => setSelectedMemory(null)}
+      />
     </section>
   );
 }

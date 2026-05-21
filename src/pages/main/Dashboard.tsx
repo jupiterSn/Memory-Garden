@@ -1,7 +1,7 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { AgGridReact } from "ag-grid-react";
-import type { ColDef } from "ag-grid-community";
+import type { ColDef, RowClickedEvent } from "ag-grid-community";
 import {
   CalendarDays,
   Image,
@@ -16,9 +16,11 @@ import { motion } from "framer-motion";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 
+import MemoryDetailModal from "@/components/MemoryDetailModal";
 import MemoryCard from "@/components/MemoryCard";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { getMemoryMedia } from "@/lib/memoryMedia";
 import type { Memory } from "@/models/memory";
 
 type DashboardProps = {
@@ -26,6 +28,7 @@ type DashboardProps = {
 };
 
 type MemoryRow = {
+  id: number;
   title: string;
   emotion: string;
   date: string;
@@ -34,14 +37,10 @@ type MemoryRow = {
 
 function Dashboard({ memories }: DashboardProps) {
   const { user } = useAuth();
+  const [selectedMemory, setSelectedMemory] = useState<Memory | null>(null);
 
   const stats = useMemo(() => {
-    const mediaItems = memories.flatMap((memory) =>
-      memory.mediaItems ??
-      (memory.mediaUrl && memory.mediaType
-        ? [{ id: memory.id, url: memory.mediaUrl, type: memory.mediaType, name: memory.title }]
-        : [])
-    );
+    const mediaItems = memories.flatMap((memory) => getMemoryMedia(memory));
     const withMedia = memories.filter(
       (memory) => (memory.mediaItems?.length ?? (memory.mediaUrl ? 1 : 0)) > 0
     ).length;
@@ -91,13 +90,14 @@ function Dashboard({ memories }: DashboardProps) {
   const rowData = useMemo<MemoryRow[]>(
     () =>
       memories.map((memory) => ({
+        id: memory.id,
         title: memory.title,
         emotion: memory.emotion,
         date: memory.date,
         media:
-          (memory.mediaItems?.length ?? (memory.mediaUrl ? 1 : 0)) > 0
-            ? `${memory.mediaItems?.length ?? 1} file${
-                (memory.mediaItems?.length ?? 1) === 1 ? "" : "s"
+          getMemoryMedia(memory).length > 0
+            ? `${getMemoryMedia(memory).length} file${
+                getMemoryMedia(memory).length === 1 ? "" : "s"
               }`
             : "text",
       })),
@@ -113,6 +113,14 @@ function Dashboard({ memories }: DashboardProps) {
     ],
     []
   );
+
+  const openRowMemory = (event: RowClickedEvent<MemoryRow>) => {
+    const memory = memories.find((item) => item.id === event.data?.id);
+
+    if (memory) {
+      setSelectedMemory(memory);
+    }
+  };
 
   return (
     <section className="space-y-6">
@@ -204,7 +212,11 @@ function Dashboard({ memories }: DashboardProps) {
           {recentMemories.length > 0 ? (
             <div className="grid gap-4 md:grid-cols-3 xl:grid-cols-1">
               {recentMemories.map((memory) => (
-                <MemoryCard key={memory.id} memory={memory} />
+                <MemoryCard
+                  key={memory.id}
+                  memory={memory}
+                  onOpen={setSelectedMemory}
+                />
               ))}
             </div>
           ) : (
@@ -236,10 +248,16 @@ function Dashboard({ memories }: DashboardProps) {
               pagination
               paginationPageSize={8}
               overlayNoRowsTemplate="No memories available"
+              onRowClicked={openRowMemory}
             />
           </div>
         </section>
       </div>
+
+      <MemoryDetailModal
+        memory={selectedMemory}
+        onClose={() => setSelectedMemory(null)}
+      />
     </section>
   );
 }

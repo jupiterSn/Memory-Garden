@@ -60,6 +60,9 @@ Renders memories as interactive plants on a realistic garden background.
 `Dashboard`:
 Shows memory statistics and an AG Grid table.
 
+`MemoryDetailModal`:
+Opens a full memory view from the dashboard, garden, or timeline, including every media attachment.
+
 `Admin`:
 Allows an admin to manage account metadata and sessions without seeing private memories.
 
@@ -94,6 +97,9 @@ Admins can manage account status but cannot read users' memory descriptions or u
 
 Per-account data:
 Each logged-in user sees only their own memories in the frontend demo.
+
+Deletion safety:
+In the garden, clicking a memory opens details. Removing a memory uses a separate button and asks for confirmation first.
 
 Low-light comfort:
 The settings toggle changes the whole app shell to a darker comfort theme, including sidebar, navbar, panels, buttons, and tables, and saves that preference locally.

@@ -1,8 +1,11 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { CalendarClock, Plus } from "lucide-react";
 import { motion } from "framer-motion";
 
+import MemoryDetailModal from "@/components/MemoryDetailModal";
 import { Button } from "@/components/ui/button";
+import { getMemoryMedia } from "@/lib/memoryMedia";
 import type { Memory } from "@/models/memory";
 
 type TimelineProps = {
@@ -10,6 +13,7 @@ type TimelineProps = {
 };
 
 function Timeline({ memories }: TimelineProps) {
+  const [selectedMemory, setSelectedMemory] = useState<Memory | null>(null);
   const sortedMemories = [...memories].sort((a, b) => {
     return new Date(b.date).getTime() - new Date(a.date).getTime();
   });
@@ -52,7 +56,16 @@ function Timeline({ memories }: TimelineProps) {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.03 }}
-                className="relative grid gap-3 pl-11 md:grid-cols-[180px_1fr]"
+                className="relative grid cursor-pointer gap-3 pl-11 md:grid-cols-[180px_1fr]"
+                role="button"
+                tabIndex={0}
+                onClick={() => setSelectedMemory(memory)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    setSelectedMemory(memory);
+                  }
+                }}
               >
                 <span className="absolute left-0 top-1 grid size-8 place-items-center rounded-full border border-zinc-200 bg-white text-xs font-semibold text-zinc-600">
                   {index + 1}
@@ -70,10 +83,10 @@ function Timeline({ memories }: TimelineProps) {
                   <p className="mt-2 text-sm leading-6 text-zinc-600">
                     {memory.description}
                   </p>
-                  {(memory.mediaItems?.length ?? (memory.mediaUrl ? 1 : 0)) > 0 && (
+                  {getMemoryMedia(memory).length > 0 && (
                     <p className="mt-3 text-xs font-semibold text-pink-500">
-                      {memory.mediaItems?.length ?? 1} media file
-                      {(memory.mediaItems?.length ?? 1) === 1 ? "" : "s"} attached
+                      {getMemoryMedia(memory).length} media file
+                      {getMemoryMedia(memory).length === 1 ? "" : "s"} attached
                     </p>
                   )}
                 </div>
@@ -82,6 +95,11 @@ function Timeline({ memories }: TimelineProps) {
           </div>
         </div>
       )}
+
+      <MemoryDetailModal
+        memory={selectedMemory}
+        onClose={() => setSelectedMemory(null)}
+      />
     </section>
   );
 }

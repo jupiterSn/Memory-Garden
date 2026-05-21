@@ -395,6 +395,10 @@
     color: #fff8f0;
   }
 
+  .ag-theme-quartz .ag-row {
+    cursor: pointer;
+  }
+
   .mg-input {
     @apply h-11 w-full rounded-lg border border-pink-100 bg-white/90 px-3 text-sm text-stone-800 outline-none transition placeholder:text-stone-400 focus:border-pink-200 focus:ring-4 focus:ring-pink-100/70;
   }

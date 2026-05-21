@@ -1,11 +1,13 @@
 import { CalendarDays, Image, Play, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { getMemoryMedia } from "@/lib/memoryMedia";
 import type { Memory } from "@/models/memory";
 
 type MemoryCardProps = {
   memory: Memory;
   onDelete?: (id: number) => void;
+  onOpen?: (memory: Memory) => void;
 };
 
 const emotionStyles: Record<Memory["emotion"], string> = {
@@ -16,24 +18,27 @@ const emotionStyles: Record<Memory["emotion"], string> = {
   milestone: "bg-emerald-100 text-emerald-800",
 };
 
-function MemoryCard({ memory, onDelete }: MemoryCardProps) {
-  const mediaItems =
-    memory.mediaItems ??
-    (memory.mediaUrl && memory.mediaType
-      ? [
-          {
-            id: memory.id,
-            url: memory.mediaUrl,
-            type: memory.mediaType,
-            name: memory.title,
-          },
-        ]
-      : []);
+function MemoryCard({ memory, onDelete, onOpen }: MemoryCardProps) {
+  const mediaItems = getMemoryMedia(memory);
   const coverMedia = mediaItems[0];
   const hasVideo = mediaItems.some((item) => item.type === "video");
+  const openMemory = () => onOpen?.(memory);
 
   return (
-    <article className="mg-panel overflow-hidden transition hover:-translate-y-0.5 hover:shadow-md">
+    <article
+      className={`mg-panel overflow-hidden transition hover:-translate-y-0.5 hover:shadow-md ${
+        onOpen ? "cursor-pointer" : ""
+      }`}
+      role={onOpen ? "button" : undefined}
+      tabIndex={onOpen ? 0 : undefined}
+      onClick={openMemory}
+      onKeyDown={(event) => {
+        if (onOpen && (event.key === "Enter" || event.key === " ")) {
+          event.preventDefault();
+          openMemory();
+        }
+      }}
+    >
       <div className="relative aspect-[16/10] bg-zinc-100">
         {coverMedia?.type === "image" && (
           <img
@@ -96,7 +101,10 @@ function MemoryCard({ memory, onDelete }: MemoryCardProps) {
               type="button"
               variant="destructive"
               size="sm"
-              onClick={() => onDelete(memory.id)}
+              onClick={(event) => {
+                event.stopPropagation();
+                onDelete(memory.id);
+              }}
             >
               <Trash2 className="size-3.5" />
               Delete
