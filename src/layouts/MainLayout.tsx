@@ -5,8 +5,8 @@ import Sidebar from "@/components/Sidebar";
 
 function MainLayout() {
   return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,#fff8fb_0%,#f3f8ed_48%,#eef7f2_100%)] text-stone-900">
-      <div className="flex">
+    <div className="memory-world-bg min-h-screen text-stone-900">
+      <div className="relative z-10 flex">
         <Sidebar />
 
         <div className="min-h-screen flex-1 lg:pl-72">

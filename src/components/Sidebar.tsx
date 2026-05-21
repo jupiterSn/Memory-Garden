@@ -1,14 +1,15 @@
 import { NavLink } from "react-router-dom";
 import {
-  BarChart3,
   CalendarClock,
   Flower2,
   Home,
   LayoutDashboard,
   Settings,
+  Sparkles,
   Sprout,
   Shield,
   User,
+  WandSparkles,
 } from "lucide-react";
 
 import { useAuth } from "@/hooks/useAuth";
@@ -72,21 +73,26 @@ function Sidebar() {
         </nav>
 
         <div className="border-t border-pink-100 p-4">
-          <div className="rounded-xl bg-pink-50/80 p-4">
-            <div className="mb-3 flex items-center gap-2 text-sm font-medium">
-              <BarChart3 className="size-4 text-emerald-600" />
-              Weekly activity
+          <div className="relative isolate overflow-hidden rounded-xl border border-emerald-100 bg-[linear-gradient(145deg,rgba(248,255,245,0.95),rgba(255,247,252,0.9)_54%,rgba(239,246,255,0.9))] p-4 shadow-sm shadow-emerald-100">
+            <div className="absolute inset-x-0 top-0 -z-10 h-1 bg-[linear-gradient(90deg,#a7d8b8,#f7c6d7,#c8d9ff)]" />
+            <div className="absolute inset-0 -z-10 bg-[repeating-linear-gradient(135deg,transparent_0_18px,rgba(255,255,255,0.38)_18px_20px)]" />
+            <div className="flex items-center gap-2 text-sm font-semibold text-stone-800">
+              <WandSparkles className="size-4 text-emerald-600" />
+              Frieren's traveling party
             </div>
-            <div className="grid grid-cols-7 gap-1">
-              {[42, 66, 35, 80, 55, 92, 48].map((height, index) => (
+            <p className="mt-2 text-xs leading-5 text-stone-600">
+              A quiet path of spells, flowers, and memories for the journey.
+            </p>
+            <div className="mt-4 grid grid-cols-4 gap-2">
+              {["Frieren", "Fern", "Stark", "Himmel"].map((name) => (
                 <div
-                  key={index}
-                  className="flex h-16 items-end rounded bg-white/80 px-1"
+                  key={name}
+                  className="rounded-lg border border-white/80 bg-white/70 px-2 py-2 text-center shadow-sm"
                 >
-                  <span
-                    className="w-full rounded-sm bg-emerald-300/80"
-                    style={{ height: `${height}%` }}
-                  />
+                  <Sparkles className="mx-auto size-3.5 text-pink-400" />
+                  <span className="mt-1 block truncate text-[10px] font-semibold text-stone-600">
+                    {name}
+                  </span>
                 </div>
               ))}
             </div>
