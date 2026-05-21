@@ -83,4 +83,8 @@ The dashboard uses AG Grid to display memory data in a filterable, sortable regi
 
 ## Theme Preferences
 
-The settings page stores garden preferences in browser storage. Low-light comfort changes the protected app shell immediately and persists after refresh.
+The settings page stores garden preferences in browser storage. Low-light comfort changes the full protected app shell immediately, including sidebar, navbar, panels, buttons, and tables, and persists after refresh.
+
+## Profile Pictures
+
+The profile page lets users add, preview, save, edit, and remove a profile picture. The image is stored as a browser data URL inside the fake user database, then reused in the sidebar and navbar.

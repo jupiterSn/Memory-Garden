@@ -15,6 +15,7 @@ The project uses a fake browser database instead of a real backend. Demo users a
 - Separate memory storage per account in the fake browser database
 - Dashboard with cards and AG Grid memory registry
 - Profile, settings, and admin screens
+- Editable profile pictures saved in the fake browser database
 
 ## Demo Accounts
 

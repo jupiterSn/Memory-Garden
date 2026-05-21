@@ -163,14 +163,35 @@
   .memory-world-bg.low-light-comfort {
     color: #f8f1e7;
     background:
-      linear-gradient(135deg, rgba(66, 54, 87, 0.88) 0%, transparent 42%),
-      linear-gradient(235deg, rgba(46, 74, 70, 0.84) 0%, transparent 40%),
-      linear-gradient(180deg, #2f293d 0%, #263a35 48%, #222f36 100%);
+      linear-gradient(135deg, rgba(31, 24, 46, 0.94) 0%, transparent 42%),
+      linear-gradient(235deg, rgba(24, 50, 48, 0.92) 0%, transparent 40%),
+      linear-gradient(180deg, #171321 0%, #172924 48%, #141d25 100%);
+  }
+
+  .memory-world-bg.low-light-comfort::before {
+    background-image:
+      linear-gradient(115deg, rgba(255, 255, 255, 0.09), transparent 30%),
+      repeating-linear-gradient(98deg, transparent 0 82px, rgba(183, 222, 166, 0.07) 82px 84px),
+      repeating-linear-gradient(6deg, transparent 0 120px, rgba(242, 184, 202, 0.08) 120px 122px);
+  }
+
+  .memory-world-bg.low-light-comfort::after {
+    opacity: 0.18;
+  }
+
+  .memory-world-bg.low-light-comfort::selection {
+    background: rgba(242, 184, 202, 0.35);
+  }
+
+  .memory-world-bg.low-light-comfort :is(.theme-topbar, .theme-sidebar, .theme-mobile-nav) {
+    border-color: rgba(242, 184, 202, 0.18);
+    background-color: rgba(22, 18, 30, 0.58);
+    color: #fff8f0;
   }
 
   .memory-world-bg.low-light-comfort .mg-panel {
     border-color: rgba(232, 205, 218, 0.24);
-    background: rgba(47, 43, 56, 0.58);
+    background: rgba(31, 27, 40, 0.54);
     box-shadow: 0 18px 48px rgba(23, 18, 28, 0.18);
   }
 
@@ -203,12 +224,12 @@
     right: clamp(1rem, 4vw, 4rem);
     bottom: clamp(1rem, 5vw, 4rem);
     z-index: 0;
-    width: min(34vw, 430px);
+    width: min(38vw, 500px);
     aspect-ratio: 3 / 4;
     border: 1px solid rgba(255, 255, 255, 0.72);
     border-radius: 18px;
     object-fit: cover;
-    opacity: 0.34;
+    opacity: 0.43;
     pointer-events: none;
     box-shadow: 0 30px 80px rgba(126, 95, 112, 0.18);
     mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.9), transparent 94%);
@@ -231,7 +252,7 @@
   }
 
   .memory-world-bg.low-light-comfort .party-page-portrait {
-    opacity: 0.24;
+    opacity: 0.34;
     border-color: rgba(242, 184, 202, 0.28);
     box-shadow: 0 30px 90px rgba(10, 8, 14, 0.35);
   }
@@ -316,12 +337,31 @@
   }
 
   .memory-world-bg .mg-panel {
-    background: rgba(255, 255, 255, 0.52);
+    background: rgba(255, 255, 255, 0.44);
     backdrop-filter: blur(18px) saturate(1.12);
   }
 
   .memory-world-bg :is(.bg-white\/60, .bg-white\/70, .bg-white\/75, .bg-white\/80, .bg-white\/85, .bg-white\/90, .bg-white\/95, .bg-zinc-50, .bg-pink-50\/70, .bg-pink-50\/80) {
-    background-color: rgba(255, 255, 255, 0.42);
+    background-color: rgba(255, 255, 255, 0.34);
+  }
+
+  .memory-world-bg :is(.theme-topbar, .theme-sidebar, .theme-mobile-nav) {
+    background-color: rgba(255, 250, 253, 0.48);
+    backdrop-filter: blur(22px) saturate(1.14);
+  }
+
+  .memory-world-bg .theme-sidebar {
+    box-shadow: 14px 0 42px rgba(220, 160, 184, 0.16);
+  }
+
+  .memory-world-bg.low-light-comfort .theme-sidebar {
+    box-shadow: 14px 0 52px rgba(8, 7, 12, 0.32);
+  }
+
+  .memory-world-bg :is(.ag-theme-quartz, table, thead) {
+    --ag-background-color: rgba(255, 255, 255, 0.42);
+    --ag-header-background-color: rgba(255, 242, 248, 0.5);
+    --ag-odd-row-background-color: rgba(255, 255, 255, 0.28);
   }
 
   .memory-world-bg :is(.border-zinc-200, .border-pink-100) {
@@ -329,11 +369,30 @@
   }
 
   .memory-world-bg.low-light-comfort .mg-panel {
-    background: rgba(47, 43, 56, 0.56);
+    background: rgba(31, 27, 40, 0.54);
   }
 
   .memory-world-bg.low-light-comfort :is(.bg-white\/60, .bg-white\/70, .bg-white\/75, .bg-white\/80, .bg-white\/85, .bg-white\/90, .bg-white\/95, .bg-zinc-50, .bg-pink-50\/70, .bg-pink-50\/80) {
-    background-color: rgba(45, 40, 55, 0.5);
+    background-color: rgba(31, 27, 40, 0.48);
+  }
+
+  .memory-world-bg.low-light-comfort :is(.garden-button, button.bg-pink-500) {
+    background: linear-gradient(135deg, #60405c 0%, #7a526a 48%, #3f6260 100%);
+    color: #fff8f0;
+    box-shadow: 0 16px 30px rgba(10, 8, 14, 0.2);
+  }
+
+  .memory-world-bg.low-light-comfort :is(button, a) {
+    border-color: rgba(242, 184, 202, 0.24);
+  }
+
+  .memory-world-bg.low-light-comfort :is(.ag-theme-quartz, table, thead) {
+    --ag-background-color: rgba(31, 27, 40, 0.54);
+    --ag-header-background-color: rgba(49, 40, 60, 0.72);
+    --ag-odd-row-background-color: rgba(38, 33, 48, 0.42);
+    --ag-foreground-color: #fff8f0;
+    --ag-secondary-foreground-color: #d8d0c7;
+    color: #fff8f0;
   }
 
   .mg-input {

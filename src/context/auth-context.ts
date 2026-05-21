@@ -9,6 +9,7 @@ export type User = {
   emailVerified?: boolean;
   createdAt?: string;
   lastLoginAt?: string | null;
+  avatarUrl?: string;
 };
 
 export type AuthContextType = {

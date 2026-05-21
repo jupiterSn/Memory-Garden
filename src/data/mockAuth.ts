@@ -16,6 +16,7 @@ export type AdminUser = {
   activeSessions: number;
   failedLoginCount: number;
   emailVerified?: boolean;
+  avatarUrl?: string;
 };
 
 export type SecuritySummary = {
@@ -40,6 +41,7 @@ const seedUsers: DemoUser[] = [
     emailVerified: true,
     createdAt: "2026-05-15T10:00:00.000Z",
     lastLoginAt: null,
+    avatarUrl: "",
     failedLoginCount: 0,
     activeSessions: [],
     lockedUntil: null,
@@ -54,6 +56,7 @@ const seedUsers: DemoUser[] = [
     emailVerified: true,
     createdAt: "2026-05-16T10:00:00.000Z",
     lastLoginAt: null,
+    avatarUrl: "",
     failedLoginCount: 0,
     activeSessions: [],
     lockedUntil: null,
@@ -96,6 +99,7 @@ function toPublicUser(user: DemoUser): User {
     emailVerified: user.emailVerified,
     createdAt: user.createdAt,
     lastLoginAt: user.lastLoginAt,
+    avatarUrl: user.avatarUrl,
   };
 }
 
@@ -198,7 +202,12 @@ export function signupWithDemoDatabase(name: string, email: string, password: st
   };
 }
 
-export function updateDemoUserProfile(currentUser: User, name: string, email: string) {
+export function updateDemoUserProfile(
+  currentUser: User,
+  name: string,
+  email: string,
+  avatarUrl?: string
+) {
   const users = readUsers();
   const normalizedEmail = email.trim().toLowerCase();
   const userIndex = users.findIndex((user) => user.id === currentUser.id);
@@ -219,6 +228,7 @@ export function updateDemoUserProfile(currentUser: User, name: string, email: st
     ...users[userIndex],
     name: name.trim(),
     email: normalizedEmail,
+    avatarUrl: avatarUrl ?? users[userIndex].avatarUrl,
   };
   saveUsers(users);
 
@@ -288,6 +298,7 @@ export function getAdminUsers(): AdminUser[] {
     activeSessions: user.activeSessions.length,
     failedLoginCount: user.failedLoginCount,
     emailVerified: user.emailVerified,
+    avatarUrl: user.avatarUrl,
   }));
 }
 
@@ -330,6 +341,7 @@ export function createAdminUser(userInput: {
       emailVerified: true,
       createdAt: new Date().toISOString(),
       lastLoginAt: null,
+      avatarUrl: "",
       failedLoginCount: 0,
       activeSessions: [],
       lockedUntil: null,

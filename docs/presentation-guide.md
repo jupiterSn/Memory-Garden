@@ -96,7 +96,10 @@ Per-account data:
 Each logged-in user sees only their own memories in the frontend demo.
 
 Low-light comfort:
-The settings toggle changes the app shell to a softer dark theme and saves that preference locally.
+The settings toggle changes the whole app shell to a darker comfort theme, including sidebar, navbar, panels, buttons, and tables, and saves that preference locally.
+
+Profile picture:
+Users can upload, edit, or remove a profile picture. It is stored in the fake local database and appears in the profile page, sidebar, and navbar.
 
 ## Questions A Doctor Might Ask
 

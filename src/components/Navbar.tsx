@@ -27,7 +27,7 @@ function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-pink-100 bg-[#fff8fb]/85 backdrop-blur-xl">
+    <header className="theme-topbar sticky top-0 z-40 border-b border-pink-100 bg-[#fff8fb]/85 backdrop-blur-xl">
       <div className="mx-auto flex h-16 w-full max-w-[1500px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         <div className="min-w-0">
           <p className="text-xs font-medium uppercase tracking-[0.18em] text-zinc-500">
@@ -60,8 +60,16 @@ function Navbar() {
             className="hidden h-10 gap-2 px-3 sm:inline-flex"
             onClick={() => navigate("/profile")}
           >
-            <span className="grid size-6 place-items-center rounded-md bg-pink-100 text-pink-500">
-              <User className="size-3.5" />
+            <span className="grid size-7 place-items-center overflow-hidden rounded-md bg-pink-100 text-pink-500">
+              {user?.avatarUrl ? (
+                <img
+                  src={user.avatarUrl}
+                  alt={user.name}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <User className="size-3.5" />
+              )}
             </span>
             <span className="max-w-28 truncate">{user?.name ?? "Profile"}</span>
           </Button>

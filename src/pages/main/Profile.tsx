@@ -1,15 +1,54 @@
-import { useState, type FormEvent } from "react";
-import { CalendarDays, Download, Mail, Save, ShieldCheck, Smartphone, User } from "lucide-react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
+import {
+  CalendarDays,
+  Camera,
+  Download,
+  Mail,
+  Save,
+  ShieldCheck,
+  Smartphone,
+  Trash2,
+  User,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { exportDemoAccount, updateDemoUserProfile } from "@/data/mockAuth";
 import { useAuth } from "@/hooks/useAuth";
 
+function readFileAsDataUrl(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+}
+
 function Profile() {
   const { user, updateUser } = useAuth();
   const [name, setName] = useState(user?.name ?? "");
   const [email, setEmail] = useState(user?.email ?? "");
+  const [avatarUrl, setAvatarUrl] = useState(user?.avatarUrl ?? "");
+
+  const handleAvatarChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0];
+
+    if (!selectedFile) {
+      return;
+    }
+
+    try {
+      setAvatarUrl(await readFileAsDataUrl(selectedFile));
+      toast.success("Profile picture selected", {
+        description: "Save your profile to keep this picture.",
+      });
+    } catch (error) {
+      console.error(error);
+      toast.error("Profile picture could not be loaded");
+    }
+  };
 
   const saveProfile = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -19,7 +58,7 @@ function Profile() {
         throw new Error("You must be logged in to update your profile.");
       }
 
-      updateUser(updateDemoUserProfile(user, name, email));
+      updateUser(updateDemoUserProfile(user, name, email, avatarUrl));
       toast.success("Profile updated");
     } catch (error) {
       console.error(error);
@@ -66,8 +105,46 @@ function Profile() {
 
       <div className="grid gap-6 lg:grid-cols-[400px_1fr]">
         <form onSubmit={saveProfile} className="mg-panel p-6">
-          <div className="grid size-20 place-items-center rounded-[1.5rem] bg-pink-100 text-pink-500">
-            <User className="size-9" />
+          <div className="flex flex-col items-center text-center">
+            <div className="relative size-32 overflow-hidden rounded-[2rem] border border-pink-100 bg-pink-100 text-pink-500 shadow-sm shadow-pink-100">
+              {avatarUrl ? (
+                <img
+                  src={avatarUrl}
+                  alt={`${name || user?.name || "User"} profile`}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <div className="grid h-full w-full place-items-center">
+                  <User className="size-12" />
+                </div>
+              )}
+            </div>
+            <div className="mt-4 flex flex-wrap justify-center gap-2">
+              <Button type="button" variant="outline" className="h-10 rounded-full" asChild>
+                <label htmlFor="profile-picture" className="cursor-pointer">
+                  <Camera className="size-4" />
+                  Change picture
+                </label>
+              </Button>
+              {avatarUrl && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-10 rounded-full"
+                  onClick={() => setAvatarUrl("")}
+                >
+                  <Trash2 className="size-4" />
+                  Remove
+                </Button>
+              )}
+            </div>
+            <input
+              id="profile-picture"
+              type="file"
+              accept="image/*"
+              onChange={handleAvatarChange}
+              className="sr-only"
+            />
           </div>
           <div className="mt-6 space-y-4">
             <label className="block">

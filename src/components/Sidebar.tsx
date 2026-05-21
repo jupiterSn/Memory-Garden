@@ -34,15 +34,23 @@ function Sidebar() {
 
   return (
     <>
-      <aside className="fixed inset-y-0 left-0 z-50 hidden w-72 border-r border-pink-100 bg-[#fffafd]/95 text-stone-800 shadow-sm shadow-pink-100/80 backdrop-blur lg:flex lg:flex-col">
+      <aside className="theme-sidebar fixed inset-y-0 left-0 z-50 hidden w-72 border-r border-pink-100 bg-[#fffafd]/95 text-stone-800 shadow-sm shadow-pink-100/80 backdrop-blur lg:flex lg:flex-col">
         <div className="border-b border-pink-100 px-6 py-6">
           <div className="flex items-center gap-3">
-            <div className="grid size-10 place-items-center rounded-xl bg-pink-100 text-pink-500">
-              <Flower2 className="size-5" />
+            <div className="grid size-11 place-items-center overflow-hidden rounded-xl bg-pink-100 text-pink-500">
+              {user?.avatarUrl ? (
+                <img
+                  src={user.avatarUrl}
+                  alt={user.name}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <Flower2 className="size-5" />
+              )}
             </div>
             <div>
               <h2 className="text-base font-semibold tracking-tight">
-                Memory Garden
+                {user?.name ?? "Memory Garden"}
               </h2>
               <p className="text-xs text-stone-500">Soft memory garden</p>
             </div>
@@ -74,17 +82,17 @@ function Sidebar() {
         </nav>
 
         <div className="border-t border-pink-100 p-4">
-          <div className="relative isolate overflow-hidden rounded-xl border border-emerald-100 bg-[linear-gradient(145deg,rgba(248,255,245,0.95),rgba(255,247,252,0.9)_54%,rgba(239,246,255,0.9))] p-4 shadow-sm shadow-emerald-100">
+          <div className="relative isolate overflow-hidden rounded-xl border border-emerald-100 bg-[linear-gradient(145deg,rgba(248,255,245,0.62),rgba(255,247,252,0.5)_54%,rgba(239,246,255,0.56))] p-4 shadow-sm shadow-emerald-100 backdrop-blur-md">
             <div className="absolute inset-x-0 top-0 -z-10 h-1 bg-[linear-gradient(90deg,#a7d8b8,#f7c6d7,#c8d9ff)]" />
             <div className="absolute inset-0 -z-10 bg-[repeating-linear-gradient(135deg,transparent_0_18px,rgba(255,255,255,0.38)_18px_20px)]" />
-            <div className="overflow-hidden rounded-lg border border-white/80 bg-white shadow-sm">
+            <div className="overflow-hidden rounded-lg border border-white/70 bg-white/45 shadow-sm">
               <img
                 src={frierenParty}
                 alt="Frieren's traveling party"
                 className="aspect-[4/3] w-full object-cover object-center"
               />
             </div>
-            <div className="flex items-center gap-2 text-sm font-semibold text-stone-800">
+            <div className="mt-3 flex items-center gap-2 text-sm font-semibold text-stone-800">
               <WandSparkles className="size-4 text-emerald-600" />
               Frieren's traveling party
             </div>
@@ -108,7 +116,7 @@ function Sidebar() {
         </div>
       </aside>
 
-      <nav className="fixed inset-x-3 bottom-3 z-50 grid grid-cols-5 gap-1 rounded-xl border border-pink-100 bg-white/95 p-1 shadow-lg shadow-pink-100/80 backdrop-blur lg:hidden">
+      <nav className="theme-mobile-nav fixed inset-x-3 bottom-3 z-50 grid grid-cols-5 gap-1 rounded-xl border border-pink-100 bg-white/95 p-1 shadow-lg shadow-pink-100/80 backdrop-blur lg:hidden">
         {links.slice(0, 5).map((link) => {
           const Icon = link.icon;
 
