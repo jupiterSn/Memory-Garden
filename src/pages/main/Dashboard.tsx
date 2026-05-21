@@ -1,12 +1,5 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { AgGridReact } from "ag-grid-react";
-import {
-  AllCommunityModule,
-  ModuleRegistry,
-  type ColDef,
-  type RowClickedEvent,
-} from "ag-grid-community";
 import {
   CalendarDays,
   Image,
@@ -18,17 +11,12 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-quartz.css";
-
 import MemoryDetailModal from "@/components/MemoryDetailModal";
 import MemoryCard from "@/components/MemoryCard";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { getMemoryMedia } from "@/lib/memoryMedia";
 import type { Memory } from "@/models/memory";
-
-ModuleRegistry.registerModules([AllCommunityModule]);
 
 type DashboardProps = {
   memories: Memory[];
@@ -72,7 +60,7 @@ function Dashboard({ memories }: DashboardProps) {
         value: withMedia,
         detail: `${mediaItems.length} files attached`,
         icon: Image,
-        color: "bg-cyan-100 text-cyan-800",
+        color: "bg-pink-100 text-pink-700",
       },
       {
         label: "Video moments",
@@ -109,29 +97,14 @@ function Dashboard({ memories }: DashboardProps) {
           title: memory.title,
           emotion: memory.emotion,
           date: memory.date,
-          media: mediaCount > 0 ? `${mediaCount} file${mediaCount === 1 ? "" : "s"}` : "text",
+          media:
+            mediaCount > 0
+              ? `${mediaCount} file${mediaCount === 1 ? "" : "s"}`
+              : "text",
         };
       }),
     [memories]
   );
-
-  const columnDefs = useMemo<ColDef<MemoryRow>[]>(
-    () => [
-      { field: "title", flex: 1.5, minWidth: 180 },
-      { field: "emotion", flex: 1, minWidth: 130 },
-      { field: "date", flex: 1, minWidth: 130, sort: "desc" },
-      { field: "media", flex: 1, minWidth: 120 },
-    ],
-    []
-  );
-
-  const openRowMemory = (event: RowClickedEvent<MemoryRow>) => {
-    const memory = memories.find((item) => item.id === event.data?.id);
-
-    if (memory) {
-      setSelectedMemory(memory);
-    }
-  };
 
   return (
     <section className="space-y-6">
@@ -153,7 +126,10 @@ function Dashboard({ memories }: DashboardProps) {
               </p>
             </div>
 
-            <Button asChild className="h-10 rounded-xl bg-pink-500 px-4 text-white hover:bg-pink-500">
+            <Button
+              asChild
+              className="h-10 rounded-xl bg-pink-500 px-4 text-white hover:bg-pink-600"
+            >
               <Link to="/plant">
                 <Plus className="size-4" />
                 New memory
@@ -170,13 +146,14 @@ function Dashboard({ memories }: DashboardProps) {
                 {memories.length} entries
               </p>
             </div>
-            <span className="grid size-11 place-items-center rounded-lg bg-emerald-100 text-emerald-800">
+            <span className="grid size-11 place-items-center rounded-lg bg-pink-100 text-pink-700">
               <TrendingUp className="size-5" />
             </span>
           </div>
+
           <div className="mt-5 h-2 overflow-hidden rounded-full bg-zinc-100">
             <div
-              className="h-full rounded-full bg-emerald-500"
+              className="h-full rounded-full bg-gradient-to-r from-pink-400 via-violet-400 to-purple-500"
               style={{ width: `${Math.min(memories.length * 12, 100)}%` }}
             />
           </div>
@@ -195,13 +172,20 @@ function Dashboard({ memories }: DashboardProps) {
               className="mg-panel p-5"
             >
               <div className="flex items-center justify-between">
-                <span className={`grid size-10 place-items-center rounded-lg ${stat.color}`}>
+                <span
+                  className={`grid size-10 place-items-center rounded-lg ${stat.color}`}
+                >
                   <Icon className="size-5" />
                 </span>
                 <span className="text-xs font-medium text-zinc-500">Live</span>
               </div>
-              <p className="mt-5 text-sm font-medium text-zinc-500">{stat.label}</p>
-              <p className="mt-1 text-3xl font-semibold text-stone-900">{stat.value}</p>
+
+              <p className="mt-5 text-sm font-medium text-zinc-500">
+                {stat.label}
+              </p>
+              <p className="mt-1 text-3xl font-semibold text-stone-900">
+                {stat.value}
+              </p>
               <p className="mt-2 text-xs text-zinc-500">{stat.detail}</p>
             </motion.div>
           );
@@ -217,6 +201,7 @@ function Dashboard({ memories }: DashboardProps) {
                 Latest uploads
               </h2>
             </div>
+
             <Button asChild variant="outline" className="h-9">
               <Link to="/garden">View all</Link>
             </Button>
@@ -233,9 +218,11 @@ function Dashboard({ memories }: DashboardProps) {
               ))}
             </div>
           ) : (
-            <div className="rounded-lg border border-dashed border-zinc-300 p-8 text-center">
-              <CalendarDays className="mx-auto size-9 text-zinc-300" />
-              <h3 className="mt-3 font-semibold text-stone-900">No memories yet</h3>
+            <div className="rounded-2xl border border-dashed border-pink-200 bg-pink-50/40 p-8 text-center">
+              <CalendarDays className="mx-auto size-9 text-pink-300" />
+              <h3 className="mt-3 font-semibold text-stone-900">
+                No memories yet
+              </h3>
               <p className="mt-1 text-sm text-zinc-500">
                 Plant your first memory to populate this dashboard.
               </p>
@@ -244,28 +231,74 @@ function Dashboard({ memories }: DashboardProps) {
         </section>
 
         <section className="mg-panel p-5">
-          <div className="mb-4">
-            <p className="mg-label">Archive table</p>
-            <h2 className="mt-1 text-lg font-semibold text-stone-900">
-              Memory registry
-            </h2>
+          <div className="mb-5 flex items-center justify-between">
+            <div>
+              <p className="mg-label">Archive table</p>
+              <h2 className="mt-1 text-lg font-semibold text-stone-900">
+                Memory registry
+              </h2>
+            </div>
+
+            <span className="rounded-full bg-pink-50 px-3 py-1 text-xs font-semibold text-pink-500">
+              {memories.length} saved
+            </span>
           </div>
 
-          <div className="ag-theme-quartz h-[480px] w-full">
-            <AgGridReact<MemoryRow>
-              rowData={rowData}
-              columnDefs={columnDefs}
-              defaultColDef={{
-                filter: true,
-                resizable: true,
-                sortable: true,
-              }}
-              pagination
-              paginationPageSize={8}
-              overlayNoRowsTemplate="No memories available"
-              onRowClicked={openRowMemory}
-            />
-          </div>
+          {rowData.length > 0 ? (
+            <div className="space-y-3">
+              {rowData.map((row) => (
+                <button
+                  key={row.id}
+                  type="button"
+                  onClick={() => {
+                    const memory = memories.find((item) => item.id === row.id);
+                    if (memory) {
+                      setSelectedMemory(memory);
+                    }
+                  }}
+                  className="group grid w-full gap-3 rounded-2xl border border-pink-100 bg-gradient-to-r from-white via-pink-50/60 to-violet-50/60 p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-pink-200 hover:shadow-lg md:grid-cols-[1.3fr_0.8fr_0.8fr_0.6fr]"
+                >
+                  <div>
+                    <p className="text-sm font-semibold text-stone-900 transition group-hover:text-pink-600">
+                      {row.title}
+                    </p>
+                    <p className="mt-1 text-xs text-stone-500">
+                      Memory title
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-sm font-medium capitalize text-violet-600">
+                      {row.emotion}
+                    </p>
+                    <p className="mt-1 text-xs text-stone-500">Emotion</p>
+                  </div>
+
+                  <div>
+                    <p className="text-sm font-medium text-stone-700">
+                      {row.date}
+                    </p>
+                    <p className="mt-1 text-xs text-stone-500">Date</p>
+                  </div>
+
+                  <div className="flex items-start md:justify-end">
+                    <span className="inline-flex rounded-full bg-white px-3 py-1 text-xs font-semibold text-pink-500 shadow-sm">
+                      {row.media}
+                    </span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-dashed border-pink-200 bg-pink-50/50 p-8 text-center">
+              <p className="font-semibold text-stone-900">
+                No registry entries yet
+              </p>
+              <p className="mt-2 text-sm text-stone-500">
+                Plant your first memory to fill the archive.
+              </p>
+            </div>
+          )}
         </section>
       </div>
 

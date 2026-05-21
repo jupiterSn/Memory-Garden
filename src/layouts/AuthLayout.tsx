@@ -1,41 +1,57 @@
 import { Outlet } from "react-router-dom";
-import { Leaf } from "lucide-react";
+import { motion } from "framer-motion";
+
+import wisteriaBackground from "@/assets/purple-wisteria-blossoms.jpg";
+import wisteriaLayer from "@/assets/minimalist-flower-illustration.jpg";
 
 function AuthLayout() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-emerald-50 via-pink-50 to-stone-100 px-6 py-10">
-      <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-6xl items-center justify-center">
-        <div className="grid w-full overflow-hidden rounded-3xl border border-white/70 bg-white/75 shadow-xl backdrop-blur lg:grid-cols-[1fr_1.1fr]">
-          <section className="hidden bg-emerald-900 p-10 text-white lg:block">
-            <div className="flex items-center gap-3">
-              <div className="grid size-11 place-items-center rounded-2xl bg-white/15">
-                <Leaf className="size-6" />
-              </div>
-              <div>
-                <h1 className="text-xl font-semibold">Memory Garden</h1>
-                <p className="text-sm text-emerald-100">
-                  A peaceful place for personal memories.
-                </p>
-              </div>
-            </div>
+    <main className="relative min-h-screen overflow-hidden bg-[#f7eefc]">
+      <img
+        src={wisteriaBackground}
+        alt="Wisteria garden background"
+        className="absolute inset-0 h-full w-full object-cover"
+      />
 
-            <div className="mt-20">
-              <p className="text-4xl font-semibold leading-tight">
-                Plant memories.
-                <br />
-                Watch them grow.
-              </p>
-              <p className="mt-5 max-w-md text-sm leading-7 text-emerald-100">
-                Turn emotions, milestones, dreams, and nostalgic moments into a
-                living digital garden.
-              </p>
-            </div>
-          </section>
+      <div className="absolute inset-0 bg-white/20" />
 
-          <section className="p-6 sm:p-10">
-            <Outlet />
-          </section>
-        </div>
+      <motion.img
+        src={wisteriaLayer}
+        alt="Animated wisteria vines"
+        className="pointer-events-none absolute left-1/2 top-0 h-[78vh] max-h-[760px] w-auto -translate-x-1/2 object-contain opacity-80 mix-blend-multiply"
+        animate={{
+          x: ["-50%", "-49%", "-50%", "-51%", "-50%"],
+          y: [0, 8, 0, 6, 0],
+          rotate: [0, 0.8, 0, -0.8, 0],
+        }}
+        transition={{
+          duration: 10,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      />
+
+      <motion.div
+        className="absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-purple-200/40 to-transparent"
+        animate={{
+          opacity: [0.25, 0.45, 0.25],
+        }}
+        transition={{
+          duration: 7,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      />
+
+      <div className="relative z-10 flex min-h-screen items-center justify-center px-6 py-10">
+        <motion.div
+          initial={{ opacity: 0, y: 18, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+          className="w-full max-w-md rounded-[2rem] border border-white/80 bg-white/75 p-8 shadow-2xl shadow-purple-200/50 backdrop-blur-xl"
+        >
+          <Outlet />
+        </motion.div>
       </div>
     </main>
   );

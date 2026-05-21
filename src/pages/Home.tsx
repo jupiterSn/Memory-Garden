@@ -1,103 +1,285 @@
-import type { CSSProperties } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Flower2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { ArrowRight, Flower2, Leaf, Lock, Sparkles, Stars } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import sakuraHero from "@/assets/sakura-hero.png";
+import cherrySky from "@/assets/cherry-blossom-tree.jpg";
+import sakuraArt from "@/assets/sakura-art.jpg";
+import sakuraLake from "@/assets/sakura-lake.jpg";
+import flowerLayer from "@/assets/minimalist-flower-illustration.jpg";
+import wisteriaTree from "@/assets/wisteria-auth.png";
 
-const petals = Array.from({ length: 28 }, (_, index) => ({
-  id: index,
-  left: `${(index * 37) % 100}%`,
-  size: `${8 + (index % 5) * 3}px`,
-  delay: `${-(index * 0.7)}s`,
-  duration: `${8 + (index % 7) * 1.4}s`,
-  drift: `${index % 2 === 0 ? 80 + index * 3 : -70 - index * 2}px`,
-  opacity: `${0.34 + (index % 4) * 0.09}`,
-  blur: `${index % 4 === 0 ? 0.8 : 0}px`,
-}));
+const fadeUp = {
+  hidden: { opacity: 0, y: 45 },
+  visible: { opacity: 1, y: 0 },
+};
+
+const softTransition = {
+  duration: 0.75,
+  ease: "easeOut",
+};
+
+function SakuraPetals() {
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      {Array.from({ length: 22 }).map((_, index) => (
+        <motion.span
+          key={index}
+          className="absolute top-[-40px] h-4 w-3 rounded-full bg-pink-300/70 shadow-sm"
+          style={{
+            left: `${(index * 47) % 100}%`,
+            borderRadius: "70% 30% 70% 30%",
+          }}
+          animate={{
+            y: ["0vh", "105vh"],
+            x: [0, index % 2 === 0 ? 55 : -55, 0],
+            rotate: [0, 120, 260],
+            opacity: [0, 0.85, 0.85, 0],
+          }}
+          transition={{
+            duration: 11 + (index % 5),
+            repeat: Infinity,
+            delay: index * 0.45,
+            ease: "linear",
+          }}
+        />
+      ))}
+    </div>
+  );
+}
 
 function Home() {
   return (
-    <main className="min-h-screen bg-[#fff8fb] text-stone-900">
+    <main className="overflow-hidden bg-[#fff7fb] text-stone-900">
+      <section className="relative min-h-screen overflow-hidden">
+        <motion.img
+          src={sakuraHero}
+          alt="Sakura garden path"
+          className="absolute inset-0 h-full w-full object-cover"
+          animate={{ scale: [1, 1.035, 1] }}
+          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+        />
+
+        <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-pink-50/25 to-[#fff7fb]" />
+
+        <motion.img
+          src={flowerLayer}
+          alt="Floating blossoms"
+          className="pointer-events-none absolute right-[-4rem] top-[-2rem] h-[75vh] opacity-65 mix-blend-multiply"
+          animate={{ y: [0, 18, 0], rotate: [0, 1.5, 0] }}
+          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
+        />
+
+        <SakuraPetals />
+
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          animate="visible"
+          transition={softTransition}
+          className="relative z-10 mx-auto flex min-h-screen max-w-6xl flex-col justify-center px-6"
+        >
+          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-pink-500">
+            Memory Garden
+          </p>
+
+          <h1 className="mt-5 max-w-3xl text-5xl font-semibold leading-tight tracking-tight text-stone-900 md:text-7xl">
+            A living digital garden for your memories.
+          </h1>
+
+          <p className="mt-6 max-w-xl text-base leading-8 text-stone-600">
+            Plant personal memories, connect them with emotions, and watch them
+            become a calm visual archive inspired by flowers, trees, stars, and
+            peaceful nature.
+          </p>
+        </motion.div>
+      </section>
+
       <section className="relative min-h-screen overflow-hidden">
         <img
-          src={sakuraHero}
-          alt="Sakura tree in a peaceful spring garden"
+          src={cherrySky}
+          alt="Cherry blossom sky"
           className="absolute inset-0 h-full w-full object-cover"
         />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,247,242,0.94)_0%,rgba(255,247,242,0.74)_42%,rgba(255,247,242,0.22)_100%)]" />
-        <div className="pointer-events-none absolute inset-0 z-[1] overflow-hidden">
-          {petals.map((petal) => (
-            <span
-              key={petal.id}
-              className="sakura-petal"
-              style={
-                {
-                  left: petal.left,
-                  "--petal-size": petal.size,
-                  "--petal-delay": petal.delay,
-                  "--petal-duration": petal.duration,
-                  "--petal-drift": petal.drift,
-                  "--petal-opacity": petal.opacity,
-                  "--petal-blur": petal.blur,
-                } as CSSProperties
-              }
-            />
-          ))}
-        </div>
 
-        <div className="relative z-10 flex min-h-screen max-w-7xl flex-col justify-between px-6 py-6 sm:px-10 lg:px-14">
-          <Link to="/" className="inline-flex items-center gap-3">
-            <span className="grid size-10 place-items-center rounded-xl bg-white/80 text-pink-500 shadow-sm shadow-pink-100 backdrop-blur">
-              <Flower2 className="size-5" />
-            </span>
-            <span className="font-semibold tracking-tight text-stone-900">
-              Memory Garden
-            </span>
-          </Link>
+        <div className="absolute inset-0 bg-white/35" />
 
+        <div className="relative z-10 mx-auto flex min-h-screen max-w-6xl items-center px-6">
           <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-            className="max-w-2xl py-14"
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="visible"
+            transition={softTransition}
+            viewport={{ once: false, amount: 0.35 }}
+            className="max-w-xl rounded-[2rem] border border-white/70 bg-white/75 p-8 shadow-2xl backdrop-blur-xl"
           >
-            <p className="mg-label">A softer place to remember</p>
-            <h1 className="mt-4 text-5xl font-semibold tracking-tight text-stone-950 sm:text-6xl">
-              Memory Garden
-            </h1>
-            <p className="mt-6 max-w-xl text-base leading-8 text-stone-700">
-              Plant personal memories in a calm sakura garden, attach photos or
-              videos, and watch each story become part of a living landscape.
+            <Flower2 className="size-10 text-pink-500" />
+
+            <h2 className="mt-5 text-4xl font-semibold tracking-tight">
+              What is Memory Garden?
+            </h2>
+
+            <p className="mt-5 leading-8 text-stone-600">
+              Memory Garden is a frontend web application where users create a
+              private archive of memories. Each memory can include a title,
+              description, date, emotion, and optional media.
             </p>
-
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Button
-                asChild
-                className="garden-button h-11 px-5"
-              >
-                <Link to="/signup">
-                  Create account
-                  <ArrowRight className="size-4" />
-                </Link>
-              </Button>
-              <Button
-                asChild
-                variant="outline"
-                className="h-11 rounded-full border-pink-100 bg-white/75 px-5 text-stone-800 shadow-sm shadow-pink-100 backdrop-blur hover:-translate-y-0.5 hover:bg-pink-50"
-              >
-                <Link to="/login">Login</Link>
-              </Button>
-            </div>
           </motion.div>
-
-          <div className="mb-2 grid max-w-2xl gap-3 border-t border-pink-100/80 pt-5 text-sm text-stone-600 sm:grid-cols-3">
-            <span>Sakura garden view</span>
-            <span>Plant-based memories</span>
-            <span>Gentle private archive</span>
-          </div>
         </div>
+      </section>
+
+      <section className="relative min-h-screen overflow-hidden">
+        <img
+          src={wisteriaTree}
+          alt="Wisteria tree"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+
+        <div className="absolute inset-0 bg-purple-950/25" />
+
+        <div className="relative z-10 mx-auto flex min-h-screen max-w-6xl items-center justify-end px-6">
+          <motion.div
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="visible"
+            transition={softTransition}
+            viewport={{ once: false, amount: 0.35 }}
+            className="max-w-xl rounded-[2rem] border border-white/60 bg-white/75 p-8 shadow-2xl backdrop-blur-xl"
+          >
+            <Sparkles className="size-10 text-violet-500" />
+
+            <h2 className="mt-5 text-4xl font-semibold tracking-tight">
+              Memories become a visual garden.
+            </h2>
+
+            <p className="mt-5 leading-8 text-stone-600">
+              Happy memories feel like flowers, peaceful moments like gardens,
+              milestones like trees, dreams like stars, and nostalgic moments
+              like soft sakura scenes.
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      <section className="relative min-h-screen overflow-hidden">
+        <img
+          src={sakuraArt}
+          alt="Sakura art"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+
+        <div className="absolute inset-0 bg-white/45" />
+
+        <div className="relative z-10 mx-auto flex min-h-screen max-w-6xl items-center px-6">
+          <motion.div
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="visible"
+            transition={softTransition}
+            viewport={{ once: false, amount: 0.35 }}
+            className="max-w-xl rounded-[2rem] border border-white/70 bg-white/80 p-8 shadow-2xl backdrop-blur-xl"
+          >
+            <Leaf className="size-10 text-emerald-500" />
+
+            <h2 className="mt-5 text-4xl font-semibold tracking-tight">
+              Built as a frontend-only project.
+            </h2>
+
+            <p className="mt-5 leading-8 text-stone-600">
+              This version uses mock authentication and browser localStorage to
+              simulate saved users and memories, making it suitable for a
+              frontend-focused software engineering presentation.
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      <section className="relative min-h-screen overflow-hidden">
+        <img
+          src={sakuraLake}
+          alt="Sakura lake"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+
+        <div className="absolute inset-0 bg-white/40" />
+
+        <div className="relative z-10 mx-auto grid min-h-screen max-w-6xl items-center gap-6 px-6 md:grid-cols-3">
+          {[
+            {
+              icon: Lock,
+              title: "Private memories",
+              text: "Each user has their own local memory collection, protected through the frontend authentication flow.",
+            },
+            {
+              icon: Stars,
+              title: "Timeline and garden",
+              text: "Users can review memories through cards, a chronological timeline, and a visual garden-style interface.",
+            },
+            {
+              icon: Sparkles,
+              title: "Polished experience",
+              text: "The project uses React, TypeScript, routing, protected pages, layouts, localStorage, Tailwind CSS, and Framer Motion.",
+            },
+          ].map((item, index) => {
+            const Icon = item.icon;
+
+            return (
+              <motion.article
+                key={item.title}
+                variants={fadeUp}
+                initial="hidden"
+                whileInView="visible"
+                transition={{ ...softTransition, delay: index * 0.12 }}
+                viewport={{ once: false, amount: 0.3 }}
+                className="rounded-[2rem] border border-white/70 bg-white/80 p-7 shadow-xl backdrop-blur-xl"
+              >
+                <Icon className="size-9 text-pink-500" />
+                <h3 className="mt-5 text-xl font-semibold">{item.title}</h3>
+                <p className="mt-4 text-sm leading-7 text-stone-600">
+                  {item.text}
+                </p>
+              </motion.article>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="bg-gradient-to-br from-pink-100 via-violet-100 to-purple-100 px-6 py-24 text-center">
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          transition={softTransition}
+          viewport={{ once: false, amount: 0.35 }}
+          className="mx-auto max-w-3xl"
+        >
+          <h2 className="text-4xl font-semibold tracking-tight">
+            Ready to enter your Memory Garden?
+          </h2>
+
+          <p className="mt-5 leading-8 text-stone-600">
+            Create an account, plant memories, view your garden, explore the
+            timeline, and manage your personal archive through a calm and
+            nature-inspired interface.
+          </p>
+
+          <div className="mt-8 flex justify-center gap-4">
+            <Link
+              to="/signup"
+              className="inline-flex h-12 items-center gap-2 rounded-full bg-gradient-to-r from-pink-400 via-violet-400 to-purple-500 px-6 text-sm font-semibold text-white shadow-lg shadow-pink-200 transition hover:scale-[1.03]"
+            >
+              Start planting
+              <ArrowRight className="size-4" />
+            </Link>
+
+            <Link
+              to="/login"
+              className="inline-flex h-12 items-center rounded-full border border-pink-200 bg-white/70 px-6 text-sm font-semibold text-pink-600 backdrop-blur transition hover:bg-white"
+            >
+              Login
+            </Link>
+          </div>
+        </motion.div>
       </section>
     </main>
   );
