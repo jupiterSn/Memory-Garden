@@ -1,10 +1,9 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { CalendarClock, Plus } from "lucide-react";
 import { motion } from "framer-motion";
 
 import MemoryDetailModal from "@/components/MemoryDetailModal";
-import { Button } from "@/components/ui/button";
 import { getMemoryMedia } from "@/lib/memoryMedia";
 import type { Memory } from "@/models/memory";
 
@@ -14,9 +13,12 @@ type TimelineProps = {
 
 function Timeline({ memories }: TimelineProps) {
   const [selectedMemory, setSelectedMemory] = useState<Memory | null>(null);
-  const sortedMemories = [...memories].sort((a, b) => {
-    return new Date(b.date).getTime() - new Date(a.date).getTime();
-  });
+
+  const sortedMemories = useMemo(() => {
+    return [...memories].sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+  }, [memories]);
 
   return (
     <section className="space-y-6">
@@ -34,64 +36,78 @@ function Timeline({ memories }: TimelineProps) {
       {sortedMemories.length === 0 ? (
         <div className="mg-panel p-10 text-center">
           <CalendarClock className="mx-auto size-10 text-zinc-300" />
+
           <h2 className="mt-4 text-xl font-semibold text-stone-900">
             No timeline entries yet
           </h2>
+
           <p className="mt-2 text-sm text-zinc-500">
             Plant a memory first to build your history.
           </p>
-          <Button asChild className="mt-5 h-10 rounded-xl bg-pink-500 text-white hover:bg-pink-500">
-            <Link to="/plant">
-              <Plus className="size-4" />
-              Plant memory
-            </Link>
-          </Button>
+
+          <Link
+            to="/plant"
+            className="mx-auto mt-5 inline-flex h-10 items-center gap-2 rounded-xl bg-pink-500 px-4 text-sm font-medium text-white transition hover:bg-pink-600"
+          >
+            <Plus className="size-4" />
+            Plant memory
+          </Link>
         </div>
       ) : (
         <div className="mg-panel p-6">
           <div className="relative space-y-6 before:absolute before:left-4 before:top-2 before:h-[calc(100%-1rem)] before:w-px before:bg-zinc-200">
-            {sortedMemories.map((memory, index) => (
-              <motion.article
-                key={memory.id}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.03 }}
-                className="relative grid cursor-pointer gap-3 pl-11 md:grid-cols-[180px_1fr]"
-                role="button"
-                tabIndex={0}
-                onClick={() => setSelectedMemory(memory)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault();
-                    setSelectedMemory(memory);
-                  }
-                }}
-              >
-                <span className="absolute left-0 top-1 grid size-8 place-items-center rounded-full border border-zinc-200 bg-white text-xs font-semibold text-zinc-600">
-                  {index + 1}
-                </span>
-                <div>
-                  <p className="text-sm font-semibold text-stone-900">{memory.date}</p>
-                  <p className="mt-1 text-xs font-medium capitalize text-zinc-500">
-                    {memory.emotion}
-                  </p>
-                </div>
-                <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-4">
-                  <h2 className="text-base font-semibold text-stone-900">
-                    {memory.title}
-                  </h2>
-                  <p className="mt-2 text-sm leading-6 text-zinc-600">
-                    {memory.description}
-                  </p>
-                  {getMemoryMedia(memory).length > 0 && (
-                    <p className="mt-3 text-xs font-semibold text-pink-500">
-                      {getMemoryMedia(memory).length} media file
-                      {getMemoryMedia(memory).length === 1 ? "" : "s"} attached
+            {sortedMemories.map((memory, index) => {
+              const mediaCount = getMemoryMedia(memory).length;
+
+              return (
+                <motion.article
+                  key={memory.id}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.03 }}
+                  className="relative grid cursor-pointer gap-3 pl-11 md:grid-cols-[180px_1fr]"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setSelectedMemory(memory)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      setSelectedMemory(memory);
+                    }
+                  }}
+                >
+                  <span className="absolute left-0 top-1 grid size-8 place-items-center rounded-full border border-zinc-200 bg-white text-xs font-semibold text-zinc-600">
+                    {index + 1}
+                  </span>
+
+                  <div>
+                    <p className="text-sm font-semibold text-stone-900">
+                      {memory.date}
                     </p>
-                  )}
-                </div>
-              </motion.article>
-            ))}
+                    <p className="mt-1 text-xs font-medium capitalize text-zinc-500">
+                      {memory.emotion}
+                    </p>
+                  </div>
+
+                  <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-4 transition hover:border-pink-200 hover:bg-pink-50/40">
+                    <h2 className="text-base font-semibold text-stone-900">
+                      {memory.title}
+                    </h2>
+
+                    <p className="mt-2 text-sm leading-6 text-zinc-600">
+                      {memory.description}
+                    </p>
+
+                    {mediaCount > 0 && (
+                      <p className="mt-3 text-xs font-semibold text-pink-500">
+                        {mediaCount} media file{mediaCount === 1 ? "" : "s"}{" "}
+                        attached
+                      </p>
+                    )}
+                  </div>
+                </motion.article>
+              );
+            })}
           </div>
         </div>
       )}

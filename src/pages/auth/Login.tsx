@@ -1,153 +1,84 @@
-import { useState, type FormEvent } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Check, Flower2, Lock, Mail } from "lucide-react";
-import { toast } from "sonner";
 
-import AuthGardenPanel from "@/components/AuthGardenPanel";
-import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
-import wisteriaAuth from "@/assets/wisteria-auth.png";
 
 function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const [email, setEmail] = useState(() =>
-    localStorage.getItem("memory-garden-remembered-email") ?? ""
-  );
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [rememberEmail, setRememberEmail] = useState(() =>
-    Boolean(localStorage.getItem("memory-garden-remembered-email"))
-  );
+
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
+    e.preventDefault();
 
     try {
       setLoading(true);
+
       await login(email, password);
-      if (rememberEmail) {
-        localStorage.setItem("memory-garden-remembered-email", email);
-      } else {
-        localStorage.removeItem("memory-garden-remembered-email");
-      }
-      toast.success("Welcome back");
-      navigate("/dashboard");
+
+      navigate("/app");
     } catch (error) {
       console.error(error);
-      toast.error("Login failed", {
-        description:
-          error instanceof Error
-            ? error.message
-            : "Check your email and password, then try again.",
-      });
+      alert("Login failed");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <section className="relative isolate min-h-screen overflow-hidden bg-pink-50">
-      <img
-        src={wisteriaAuth}
-        alt="Wisteria tree garden"
-        className="absolute inset-0 -z-20 h-full w-full object-cover object-center"
-      />
-      <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(255,248,251,0.70)_0%,rgba(255,248,251,0.34)_44%,rgba(255,248,251,0.10)_100%)]" />
-      <div className="absolute inset-0 -z-10 bg-white/5" />
-      <AuthGardenPanel
-        eyebrow="Under the wisteria"
-        title="Return to a quiet garden made for the moments you keep close."
-      />
+    <section className="flex min-h-screen items-center justify-center bg-emerald-50 px-6">
+      <div className="w-full max-w-md rounded-3xl bg-white p-10 shadow-xl">
+        <h1 className="mb-2 text-4xl font-bold text-emerald-900">
+          Welcome Back 🌿
+        </h1>
 
-      <div className="relative z-10 flex min-h-screen items-center px-6 py-12 sm:px-10 lg:px-16">
-        <div className="w-full max-w-md">
-          <Link to="/" className="mb-8 inline-flex items-center gap-3">
-            <span className="grid size-10 place-items-center rounded-xl bg-pink-100 text-pink-500">
-              <Flower2 className="size-5" />
-            </span>
-            <span className="font-semibold tracking-tight text-stone-900">
-              Memory Garden
-            </span>
+        <p className="mb-8 text-stone-500">
+          Login to enter your Memory Garden.
+        </p>
+
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <input
+            type="email"
+            placeholder="Email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full rounded-2xl border border-emerald-200 px-4 py-3"
+          />
+
+          <input
+            type="password"
+            placeholder="Password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full rounded-2xl border border-emerald-200 px-4 py-3"
+          />
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full rounded-2xl bg-emerald-700 px-6 py-4 font-semibold text-white"
+          >
+            {loading ? "Logging in..." : "Login"}
+          </button>
+        </form>
+
+        <p className="mt-6 text-center text-sm text-stone-500">
+          Don’t have an account?{" "}
+          <Link
+            to="/signup"
+            className="font-semibold text-emerald-700"
+          >
+            Create account
           </Link>
-
-          <div className="mg-panel bg-white/62 p-6 shadow-xl shadow-pink-100/50 backdrop-blur-md">
-            <p className="mg-label">Login</p>
-            <h1 className="mt-2 text-3xl font-semibold tracking-tight text-stone-900">
-              Welcome back
-            </h1>
-            <p className="mt-2 text-sm text-zinc-500">
-              Sign in to continue curating your private archive.
-            </p>
-
-            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-              <label className="block">
-                <span className="mg-label">Email</span>
-                <div className="relative mt-2">
-                  <Mail className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-zinc-400" />
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(event) => setEmail(event.target.value)}
-                    className="mg-input pl-9"
-                    placeholder="you@example.com"
-                  />
-                </div>
-              </label>
-
-              <label className="block">
-                <span className="mg-label">Password</span>
-                <div className="relative mt-2">
-                  <Lock className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-zinc-400" />
-                  <input
-                    type="password"
-                    required
-                    value={password}
-                    onChange={(event) => setPassword(event.target.value)}
-                    className="mg-input pl-9"
-                    placeholder="Your password"
-                  />
-                </div>
-              </label>
-
-              <label className="flex items-center gap-3 rounded-2xl border border-pink-100 bg-white/60 px-3 py-2 text-sm text-stone-600">
-                <input
-                  type="checkbox"
-                  checked={rememberEmail}
-                  onChange={(event) => setRememberEmail(event.target.checked)}
-                  className="sr-only"
-                />
-                <span
-                  className={`grid size-5 place-items-center rounded-md border ${
-                    rememberEmail
-                      ? "border-pink-200 bg-pink-100 text-pink-500"
-                      : "border-pink-100 bg-white text-transparent"
-                  }`}
-                >
-                  <Check className="size-3.5" />
-                </span>
-                Remember my email on this device
-              </label>
-
-              <Button
-                type="submit"
-                disabled={loading}
-                className="garden-button h-11 w-full"
-              >
-                {loading ? "Signing in..." : "Login"}
-              </Button>
-            </form>
-
-            <p className="mt-6 text-center text-sm text-zinc-500">
-              Do not have an account?{" "}
-              <Link to="/signup" className="font-semibold text-pink-500">
-                Create one
-              </Link>
-            </p>
-          </div>
-        </div>
+        </p>
       </div>
     </section>
   );

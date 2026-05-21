@@ -1,7 +1,12 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { AgGridReact } from "ag-grid-react";
-import type { ColDef, RowClickedEvent } from "ag-grid-community";
+import {
+  AllCommunityModule,
+  ModuleRegistry,
+  type ColDef,
+  type RowClickedEvent,
+} from "ag-grid-community";
 import {
   CalendarDays,
   Image,
@@ -23,6 +28,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { getMemoryMedia } from "@/lib/memoryMedia";
 import type { Memory } from "@/models/memory";
 
+ModuleRegistry.registerModules([AllCommunityModule]);
+
 type DashboardProps = {
   memories: Memory[];
 };
@@ -41,9 +48,11 @@ function Dashboard({ memories }: DashboardProps) {
 
   const stats = useMemo(() => {
     const mediaItems = memories.flatMap((memory) => getMemoryMedia(memory));
+
     const withMedia = memories.filter(
       (memory) => (memory.mediaItems?.length ?? (memory.mediaUrl ? 1 : 0)) > 0
     ).length;
+
     const videos = mediaItems.filter((item) => item.type === "video").length;
     const uniqueMoods = new Set(memories.map((memory) => memory.emotion)).size;
 
@@ -51,7 +60,10 @@ function Dashboard({ memories }: DashboardProps) {
       {
         label: "Total memories",
         value: memories.length,
-        detail: memories.length === 1 ? "1 story archived" : `${memories.length} stories archived`,
+        detail:
+          memories.length === 1
+            ? "1 story archived"
+            : `${memories.length} stories archived`,
         icon: Leaf,
         color: "bg-emerald-100 text-emerald-800",
       },
@@ -89,18 +101,17 @@ function Dashboard({ memories }: DashboardProps) {
 
   const rowData = useMemo<MemoryRow[]>(
     () =>
-      memories.map((memory) => ({
-        id: memory.id,
-        title: memory.title,
-        emotion: memory.emotion,
-        date: memory.date,
-        media:
-          getMemoryMedia(memory).length > 0
-            ? `${getMemoryMedia(memory).length} file${
-                getMemoryMedia(memory).length === 1 ? "" : "s"
-              }`
-            : "text",
-      })),
+      memories.map((memory) => {
+        const mediaCount = getMemoryMedia(memory).length;
+
+        return {
+          id: memory.id,
+          title: memory.title,
+          emotion: memory.emotion,
+          date: memory.date,
+          media: mediaCount > 0 ? `${mediaCount} file${mediaCount === 1 ? "" : "s"}` : "text",
+        };
+      }),
     [memories]
   );
 
@@ -202,7 +213,9 @@ function Dashboard({ memories }: DashboardProps) {
           <div className="mb-4 flex items-center justify-between">
             <div>
               <p className="mg-label">Recent memories</p>
-              <h2 className="mt-1 text-lg font-semibold text-stone-900">Latest uploads</h2>
+              <h2 className="mt-1 text-lg font-semibold text-stone-900">
+                Latest uploads
+              </h2>
             </div>
             <Button asChild variant="outline" className="h-9">
               <Link to="/garden">View all</Link>
@@ -233,7 +246,9 @@ function Dashboard({ memories }: DashboardProps) {
         <section className="mg-panel p-5">
           <div className="mb-4">
             <p className="mg-label">Archive table</p>
-            <h2 className="mt-1 text-lg font-semibold text-stone-900">Memory registry</h2>
+            <h2 className="mt-1 text-lg font-semibold text-stone-900">
+              Memory registry
+            </h2>
           </div>
 
           <div className="ag-theme-quartz h-[480px] w-full">
