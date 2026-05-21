@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import Home from "@/pages/Home";
@@ -17,33 +17,55 @@ import Admin from "@/pages/main/Admin";
 import MainLayout from "@/layouts/MainLayout";
 import ProtectedRoute from "@/routes/ProtectedRoute";
 
+import { useAuth } from "@/hooks/useAuth";
 import type { Memory } from "@/models/memory";
 
-function App() {
-  const [memories, setMemories] = useState<Memory[]>(() => {
-    const savedMemories = localStorage.getItem("memory-garden-memories");
-    return savedMemories ? JSON.parse(savedMemories) : [];
-  });
+function getMemoryStorageKey(userId: number) {
+  return `memory-garden-memories-${userId}`;
+}
 
-  useEffect(() => {
-    try {
-      localStorage.setItem(
-        "memory-garden-memories",
-        JSON.stringify(memories)
-      );
-    } catch (error) {
-      console.error("Unable to save memories locally", error);
+function App() {
+  const { user } = useAuth();
+  const currentUserId = user?.id ?? null;
+  const [memoryVersion, setMemoryVersion] = useState(0);
+  const memories = useMemo(() => {
+    void memoryVersion;
+
+    if (!currentUserId) {
+      return [];
     }
-  }, [memories]);
+
+    try {
+      const savedMemories = localStorage.getItem(getMemoryStorageKey(currentUserId));
+      return savedMemories ? (JSON.parse(savedMemories) as Memory[]) : [];
+    } catch (error) {
+      console.error("Unable to load memories locally", error);
+      return [];
+    }
+  }, [currentUserId, memoryVersion]);
 
   const addMemory = (memory: Memory) => {
-    setMemories((currentMemories) => [...currentMemories, memory]);
+    if (!currentUserId) {
+      return;
+    }
+
+    localStorage.setItem(
+      getMemoryStorageKey(currentUserId),
+      JSON.stringify([...memories, memory])
+    );
+    setMemoryVersion((currentVersion) => currentVersion + 1);
   };
 
   const deleteMemory = (id: number) => {
-    setMemories((currentMemories) =>
-      currentMemories.filter((memory) => memory.id !== id)
+    if (!currentUserId) {
+      return;
+    }
+
+    localStorage.setItem(
+      getMemoryStorageKey(currentUserId),
+      JSON.stringify(memories.filter((memory) => memory.id !== id))
     );
+    setMemoryVersion((currentVersion) => currentVersion + 1);
   };
 
   return (

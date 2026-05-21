@@ -30,6 +30,7 @@ The fake database tracks:
 - active browser session ids
 - revoked session count
 - saved preferences
+- per-account memories
 
 ## Data Flow
 
@@ -37,7 +38,7 @@ The fake database tracks:
 2. `mockAuth.ts` checks the local fake database.
 3. A browser session id and sanitized user object are saved in `localStorage`.
 4. `ProtectedRoute` uses auth context to permit or redirect users.
-5. Memories are stored locally for the current browser and rendered in dashboard, garden, and timeline views.
+5. Memories are stored locally under a user-specific key and rendered in dashboard, garden, and timeline views.
 6. Admin actions update account metadata in the local fake database.
 
 ## Important Limitation

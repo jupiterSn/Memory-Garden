@@ -33,6 +33,8 @@ User: user@memorygarden.local / User@12345
 
 The app saves any new users, sessions, profile changes, and admin changes in `localStorage`.
 
+Each account also gets its own memory storage key, so a new user starts with a fresh empty dashboard, garden, and timeline.
+
 ## Important Components
 
 `AuthContext`:
@@ -87,6 +89,9 @@ The admin can clear a user's active sessions in the fake database.
 
 Admin privacy:
 Admins can manage account status but cannot read users' memory descriptions or uploaded media.
+
+Per-account data:
+Each logged-in user sees only their own memories in the frontend demo.
 
 ## Questions A Doctor Might Ask
 

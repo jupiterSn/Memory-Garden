@@ -59,6 +59,8 @@ Users can plant memories with:
 
 Images are converted into persistent browser data URLs so they remain visible after logout or refresh on the same browser.
 
+Memories are saved per account with user-specific browser storage keys, so a new account starts with an empty dashboard, garden, and timeline.
+
 ## Dashboard
 
 The dashboard uses AG Grid to display memory data in a filterable, sortable registry. It also includes summary cards and recent memory previews.
