@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import type { Memory, MemoryEmotion } from "@/models/memory";
+import type { Memory, MemoryEmotion, MemoryMedia } from "@/models/memory";
 
 type PlantMemoryProps = {
   addMemory: (memory: Memory) => void;
@@ -33,30 +33,38 @@ function PlantMemory({ addMemory }: PlantMemoryProps) {
   const [description, setDescription] = useState("");
   const [emotion, setEmotion] = useState<MemoryEmotion>("happy");
   const [date, setDate] = useState("");
-  const [media, setMedia] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState("");
+  const [mediaFiles, setMediaFiles] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
 
   const handleMediaChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files?.[0];
+    const selectedFiles = Array.from(event.target.files ?? []);
 
-    if (!selectedFile) {
-      setMedia(null);
-      setPreviewUrl("");
+    if (selectedFiles.length === 0) {
+      setMediaFiles([]);
+      setPreviewUrls([]);
       return;
     }
 
-    setMedia(selectedFile);
-    setPreviewUrl(URL.createObjectURL(selectedFile));
+    previewUrls.forEach((url) => URL.revokeObjectURL(url));
+    setMediaFiles(selectedFiles);
+    setPreviewUrls(selectedFiles.map((file) => URL.createObjectURL(file)));
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    let persistentMediaUrl = "";
+    let mediaItems: MemoryMedia[] = [];
 
-    if (media) {
+    if (mediaFiles.length > 0) {
       try {
-        persistentMediaUrl = await readFileAsDataUrl(media);
+        mediaItems = await Promise.all(
+          mediaFiles.map(async (file, index) => ({
+            id: Date.now() + index,
+            url: await readFileAsDataUrl(file),
+            type: file.type.startsWith("video") ? "video" : "image",
+            name: file.name,
+          }))
+        );
       } catch (error) {
         console.error(error);
         toast.error("The media could not be saved");
@@ -70,12 +78,9 @@ function PlantMemory({ addMemory }: PlantMemoryProps) {
       description,
       emotion,
       date,
-      mediaUrl: persistentMediaUrl || undefined,
-      mediaType: media?.type.startsWith("video")
-        ? "video"
-        : media
-          ? "image"
-          : undefined,
+      mediaItems,
+      mediaUrl: mediaItems[0]?.url,
+      mediaType: mediaItems[0]?.type,
     };
 
     try {
@@ -95,11 +100,10 @@ function PlantMemory({ addMemory }: PlantMemoryProps) {
     setDescription("");
     setEmotion("happy");
     setDate("");
-    setMedia(null);
-    setPreviewUrl("");
+    setMediaFiles([]);
+    previewUrls.forEach((url) => URL.revokeObjectURL(url));
+    setPreviewUrls([]);
   };
-
-  const isVideo = media?.type.startsWith("video");
 
   return (
     <section className="grid gap-6 xl:grid-cols-[0.8fr_1.2fr]">
@@ -121,7 +125,7 @@ function PlantMemory({ addMemory }: PlantMemoryProps) {
           {[
             ["1", "Write the story"],
             ["2", "Tag the emotion"],
-            ["3", "Attach image or video"],
+            ["3", "Attach images and videos"],
           ].map(([step, label]) => (
             <div key={step} className="flex items-center gap-3 rounded-lg bg-zinc-50 p-3">
               <span className="grid size-8 place-items-center rounded-md bg-pink-100 text-sm font-semibold text-pink-500">
@@ -219,10 +223,16 @@ function PlantMemory({ addMemory }: PlantMemoryProps) {
                 <span className="mt-1 text-xs text-zinc-500">
                   Photos stay with your saved memories on this browser.
                 </span>
+                {mediaFiles.length > 0 && (
+                  <span className="mt-2 rounded-md bg-white px-2 py-1 text-xs font-semibold text-stone-600 ring-1 ring-zinc-200">
+                    {mediaFiles.length} file{mediaFiles.length === 1 ? "" : "s"} selected
+                  </span>
+                )}
               </label>
               <input
                 id="memory-media"
                 type="file"
+                multiple
                 accept="image/*,video/*"
                 onChange={handleMediaChange}
                 className="sr-only"
@@ -245,28 +255,51 @@ function PlantMemory({ addMemory }: PlantMemoryProps) {
 
             <div className="overflow-hidden rounded-lg border border-zinc-200 bg-white">
               <div className="aspect-[16/11] bg-zinc-100">
-                {previewUrl ? (
-                  isVideo ? (
-                    <video src={previewUrl} controls className="h-full w-full object-cover" />
+                {previewUrls.length > 0 ? (
+                  mediaFiles[0]?.type.startsWith("video") ? (
+                    <video src={previewUrls[0]} controls className="h-full w-full object-cover" />
                   ) : (
                     <img
-                      src={previewUrl}
+                      src={previewUrls[0]}
                       alt="Selected memory preview"
                       className="h-full w-full object-cover"
                     />
                   )
                 ) : (
                   <div className="flex h-full items-center justify-center">
-                    {isVideo ? (
-                      <FileVideo className="size-10 text-zinc-300" />
-                    ) : (
-                      <ImagePlus className="size-10 text-zinc-300" />
-                    )}
+                    <ImagePlus className="size-10 text-zinc-300" />
                   </div>
                 )}
               </div>
 
               <div className="space-y-3 p-4">
+                {previewUrls.length > 1 && (
+                  <div className="grid grid-cols-4 gap-2">
+                    {previewUrls.slice(1, 5).map((url, index) => {
+                      const file = mediaFiles[index + 1];
+
+                      return (
+                        <div
+                          key={url}
+                          className="relative aspect-square overflow-hidden rounded-md bg-zinc-100"
+                        >
+                          {file?.type.startsWith("video") ? (
+                            <>
+                              <video src={url} className="h-full w-full object-cover" />
+                              <FileVideo className="absolute left-1 top-1 size-4 text-white drop-shadow" />
+                            </>
+                          ) : (
+                            <img
+                              src={url}
+                              alt={`Selected media ${index + 2}`}
+                              className="h-full w-full object-cover"
+                            />
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
                 <div className="flex items-center gap-2 text-xs font-medium text-zinc-500">
                   <CalendarDays className="size-3.5" />
                   {date || "Memory date"}

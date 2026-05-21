@@ -24,11 +24,24 @@ const plantPositions = [
 ];
 
 function PlantVisual({ memory }: { memory: Memory }) {
+  const mediaItems =
+    memory.mediaItems ??
+    (memory.mediaUrl && memory.mediaType
+      ? [
+          {
+            id: memory.id,
+            url: memory.mediaUrl,
+            type: memory.mediaType,
+            name: memory.title,
+          },
+        ]
+      : []);
+  const imageMedia = mediaItems.find((item) => item.type === "image");
   const imageBloom =
-    memory.mediaUrl && memory.mediaType === "image" ? (
+    imageMedia ? (
       <div className="absolute left-1/2 top-1 z-20 size-14 -translate-x-1/2 overflow-hidden rounded-full border-4 border-white/80 shadow-lg shadow-pink-100">
         <img
-          src={memory.mediaUrl}
+          src={imageMedia.url}
           alt={memory.title}
           className="h-full w-full object-cover"
         />

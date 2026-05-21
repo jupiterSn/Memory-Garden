@@ -55,9 +55,11 @@ Users can plant memories with:
 - description
 - emotion
 - date
-- optional image or video
+- optional images and videos
 
 Images are converted into persistent browser data URLs so they remain visible after logout or refresh on the same browser.
+
+Each memory can store multiple media attachments in `mediaItems`. Older single-file memories still work through the legacy `mediaUrl` and `mediaType` fields.
 
 Memories are saved per account with user-specific browser storage keys, so a new account starts with an empty dashboard, garden, and timeline.
 

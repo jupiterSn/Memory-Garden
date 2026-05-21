@@ -70,6 +70,12 @@ function Timeline({ memories }: TimelineProps) {
                   <p className="mt-2 text-sm leading-6 text-zinc-600">
                     {memory.description}
                   </p>
+                  {(memory.mediaItems?.length ?? (memory.mediaUrl ? 1 : 0)) > 0 && (
+                    <p className="mt-3 text-xs font-semibold text-pink-500">
+                      {memory.mediaItems?.length ?? 1} media file
+                      {(memory.mediaItems?.length ?? 1) === 1 ? "" : "s"} attached
+                    </p>
+                  )}
                 </div>
               </motion.article>
             ))}

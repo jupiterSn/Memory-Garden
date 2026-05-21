@@ -11,7 +11,7 @@ The project uses a fake browser database instead of a real backend. Demo users a
 - Protected routing with Context API authentication
 - Fake local authentication database in code
 - Frontend security demonstrations: role checks, account status, lockout after failed logins, session ids, session revocation, password strength rules, and admin-only metadata
-- Memory creation with images/videos, local persistence, garden rendering, and timeline views
+- Memory creation with multiple images/videos, local persistence, garden rendering, and timeline views
 - Separate memory storage per account in the fake browser database
 - Dashboard with cards and AG Grid memory registry
 - Profile, settings, and admin screens
@@ -73,7 +73,7 @@ Because this is a frontend-only Web 1 project, these features are demonstrations
 - Session ids are generated in the browser
 - Admins can revoke sessions and change account status
 - Admins can only see account metadata, not private memories
-- Each account has its own memory list, dashboard, garden, and timeline data
+- Each account has its own memory list, dashboard, garden, timeline data, and media attachments
 
 For a real Web 2/backend project, password hashing, real rate limiting, database storage, secure cookies, server-side sessions, email verification, captcha, and two-factor authentication would belong on the backend.
 

@@ -2,7 +2,7 @@
 
 ## Project Summary
 
-Memory Garden is a frontend-only web application that lets users preserve memories as a visual garden. A user can create an account, log in, plant a memory with an emotion and optional media, then revisit those memories through a dashboard, garden, and timeline.
+Memory Garden is a frontend-only web application that lets users preserve memories as a visual garden. A user can create an account, log in, plant a memory with an emotion and optional images/videos, then revisit those memories through a dashboard, garden, and timeline.
 
 The project intentionally does not use a real backend. It uses a fake database in the frontend because this is a Web 1/frontend course project.
 
@@ -50,7 +50,7 @@ Blocks protected pages if no authenticated user exists.
 Provides the authenticated app shell with sidebar and navbar.
 
 `PlantMemory`:
-Collects memory information and media, then creates a memory object.
+Collects memory information and one or more media files, then creates a memory object.
 
 `Garden`:
 Renders memories as interactive plants on a realistic garden background.

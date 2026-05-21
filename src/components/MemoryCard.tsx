@@ -17,26 +17,41 @@ const emotionStyles: Record<Memory["emotion"], string> = {
 };
 
 function MemoryCard({ memory, onDelete }: MemoryCardProps) {
+  const mediaItems =
+    memory.mediaItems ??
+    (memory.mediaUrl && memory.mediaType
+      ? [
+          {
+            id: memory.id,
+            url: memory.mediaUrl,
+            type: memory.mediaType,
+            name: memory.title,
+          },
+        ]
+      : []);
+  const coverMedia = mediaItems[0];
+  const hasVideo = mediaItems.some((item) => item.type === "video");
+
   return (
     <article className="mg-panel overflow-hidden transition hover:-translate-y-0.5 hover:shadow-md">
       <div className="relative aspect-[16/10] bg-zinc-100">
-        {memory.mediaUrl && memory.mediaType === "image" && (
+        {coverMedia?.type === "image" && (
           <img
-            src={memory.mediaUrl}
+            src={coverMedia.url}
             alt={memory.title}
             className="h-full w-full object-cover"
           />
         )}
 
-        {memory.mediaUrl && memory.mediaType === "video" && (
+        {coverMedia?.type === "video" && (
           <video
-            src={memory.mediaUrl}
+            src={coverMedia.url}
             controls
             className="h-full w-full object-cover"
           />
         )}
 
-        {!memory.mediaUrl && (
+        {!coverMedia && (
           <div className="flex h-full items-center justify-center">
             <Image className="size-10 text-zinc-300" />
           </div>
@@ -48,7 +63,13 @@ function MemoryCard({ memory, onDelete }: MemoryCardProps) {
           {memory.emotion}
         </span>
 
-        {memory.mediaType === "video" && (
+        {mediaItems.length > 1 && (
+          <span className="absolute bottom-3 right-3 rounded-full bg-white/90 px-2.5 py-1 text-xs font-semibold text-stone-700 shadow-sm">
+            {mediaItems.length} files
+          </span>
+        )}
+
+        {hasVideo && (
           <span className="absolute right-3 top-3 grid size-8 place-items-center rounded-full bg-pink-500/85 text-white">
             <Play className="size-4" />
           </span>

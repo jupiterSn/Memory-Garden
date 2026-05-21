@@ -36,8 +36,16 @@ function Dashboard({ memories }: DashboardProps) {
   const { user } = useAuth();
 
   const stats = useMemo(() => {
-    const withMedia = memories.filter((memory) => memory.mediaUrl).length;
-    const videos = memories.filter((memory) => memory.mediaType === "video").length;
+    const mediaItems = memories.flatMap((memory) =>
+      memory.mediaItems ??
+      (memory.mediaUrl && memory.mediaType
+        ? [{ id: memory.id, url: memory.mediaUrl, type: memory.mediaType, name: memory.title }]
+        : [])
+    );
+    const withMedia = memories.filter(
+      (memory) => (memory.mediaItems?.length ?? (memory.mediaUrl ? 1 : 0)) > 0
+    ).length;
+    const videos = mediaItems.filter((item) => item.type === "video").length;
     const uniqueMoods = new Set(memories.map((memory) => memory.emotion)).size;
 
     return [
@@ -51,14 +59,14 @@ function Dashboard({ memories }: DashboardProps) {
       {
         label: "With media",
         value: withMedia,
-        detail: "Images and videos attached",
+        detail: `${mediaItems.length} files attached`,
         icon: Image,
         color: "bg-cyan-100 text-cyan-800",
       },
       {
         label: "Video moments",
         value: videos,
-        detail: "Motion memories captured",
+        detail: "Video files captured",
         icon: PlayCircle,
         color: "bg-violet-100 text-violet-800",
       },
@@ -86,7 +94,12 @@ function Dashboard({ memories }: DashboardProps) {
         title: memory.title,
         emotion: memory.emotion,
         date: memory.date,
-        media: memory.mediaType ?? "text",
+        media:
+          (memory.mediaItems?.length ?? (memory.mediaUrl ? 1 : 0)) > 0
+            ? `${memory.mediaItems?.length ?? 1} file${
+                (memory.mediaItems?.length ?? 1) === 1 ? "" : "s"
+              }`
+            : "text",
       })),
     [memories]
   );
