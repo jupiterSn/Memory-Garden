@@ -19,11 +19,33 @@ function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
+  const searchParams = new URLSearchParams(location.search);
+  const searchQuery = searchParams.get("q") ?? "";
 
   const handleLogout = () => {
     logout();
     toast.success("Signed out");
     navigate("/login");
+  };
+
+  const updateSearch = (query: string) => {
+    const nextParams = new URLSearchParams(location.search);
+
+    if (query.trim()) {
+      nextParams.set("q", query);
+    } else {
+      nextParams.delete("q");
+    }
+
+    const nextSearch = nextParams.toString();
+    const searchablePages = ["/dashboard", "/garden", "/timeline"];
+    const nextPath = searchablePages.includes(location.pathname)
+      ? location.pathname
+      : "/garden";
+
+    navigate(`${nextPath}${nextSearch ? `?${nextSearch}` : ""}`, {
+      replace: searchablePages.includes(location.pathname),
+    });
   };
 
   return (
@@ -38,10 +60,17 @@ function Navbar() {
           </h1>
         </div>
 
-        <div className="hidden h-10 min-w-[280px] items-center gap-2 rounded-xl border border-pink-100 bg-white/80 px-3 text-sm text-stone-500 md:flex">
+        <label className="hidden h-10 min-w-[280px] items-center gap-2 rounded-xl border border-pink-100 bg-white/80 px-3 text-sm text-stone-500 transition focus-within:border-pink-200 focus-within:ring-4 focus-within:ring-pink-100/70 md:flex">
           <Search className="size-4" />
-          <span>Search memories, moods, dates</span>
-        </div>
+          <span className="sr-only">Search memories</span>
+          <input
+            type="search"
+            value={searchQuery}
+            onChange={(event) => updateSearch(event.target.value)}
+            placeholder="Search memories, moods, dates"
+            className="min-w-0 flex-1 bg-transparent outline-none placeholder:text-stone-400"
+          />
+        </label>
 
         <div className="flex items-center gap-2">
           <Button

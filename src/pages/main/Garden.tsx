@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Plus, Search, Shovel, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
@@ -8,6 +8,7 @@ import MemoryDetailModal from "@/components/MemoryDetailModal";
 import { Button } from "@/components/ui/button";
 import gardenBed from "@/assets/garden-bed.png";
 import { getMemoryMedia } from "@/lib/memoryMedia";
+import { filterMemories } from "@/lib/memorySearch";
 import type { Memory } from "@/models/memory";
 
 type GardenProps = {
@@ -102,7 +103,22 @@ function PlantVisual({ memory }: { memory: Memory }) {
 }
 
 function Garden({ memories, deleteMemory }: GardenProps) {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [selectedMemory, setSelectedMemory] = useState<Memory | null>(null);
+  const searchQuery = searchParams.get("q") ?? "";
+  const visibleMemories = filterMemories(memories, searchQuery);
+
+  const updateSearch = (query: string) => {
+    const nextParams = new URLSearchParams(searchParams);
+
+    if (query.trim()) {
+      nextParams.set("q", query);
+    } else {
+      nextParams.delete("q");
+    }
+
+    setSearchParams(nextParams, { replace: true });
+  };
 
   const handleDelete = (id: number) => {
     const targetMemory = memories.find((memory) => memory.id === id);
@@ -156,10 +172,17 @@ function Garden({ memories, deleteMemory }: GardenProps) {
           </Button>
         </div>
 
-        <div className="mt-6 flex h-11 items-center gap-2 rounded-xl border border-pink-100 bg-white/75 px-3 text-sm text-stone-500">
+        <label className="mt-6 flex h-11 items-center gap-2 rounded-xl border border-pink-100 bg-white/75 px-3 text-sm text-stone-500 transition focus-within:border-pink-200 focus-within:ring-4 focus-within:ring-pink-100/70">
           <Search className="size-4" />
-          <span>Find a memory by title, feeling, or season.</span>
-        </div>
+          <span className="sr-only">Find a memory</span>
+          <input
+            type="search"
+            value={searchQuery}
+            onChange={(event) => updateSearch(event.target.value)}
+            placeholder="Find a memory by title, feeling, or date."
+            className="min-w-0 flex-1 bg-transparent outline-none placeholder:text-stone-400"
+          />
+        </label>
       </div>
 
       {memories.length === 0 ? (
@@ -178,6 +201,16 @@ function Garden({ memories, deleteMemory }: GardenProps) {
             <Link to="/plant">Plant first memory</Link>
           </Button>
         </div>
+      ) : visibleMemories.length === 0 ? (
+        <div className="mg-panel p-10 text-center">
+          <Search className="mx-auto size-10 text-zinc-300" />
+          <h2 className="mt-4 text-xl font-semibold text-stone-900">
+            No matching memories
+          </h2>
+          <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-stone-500">
+            Try another title, emotion, or date to find a planted memory.
+          </p>
+        </div>
       ) : (
         <div className="mg-panel overflow-hidden">
           <div className="relative min-h-[620px] overflow-hidden bg-stone-100">
@@ -188,7 +221,7 @@ function Garden({ memories, deleteMemory }: GardenProps) {
             />
             <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,248,251,0.22)_0%,rgba(255,255,255,0.02)_45%,rgba(73,92,57,0.08)_100%)]" />
 
-            {memories.map((memory, index) => (
+            {visibleMemories.map((memory, index) => (
               <motion.article
                 key={memory.id}
                 initial={{ opacity: 0, scale: 0.8, y: 24 }}

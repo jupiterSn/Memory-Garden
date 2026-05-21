@@ -1,11 +1,12 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   CalendarDays,
   Image,
   Leaf,
   PlayCircle,
   Plus,
+  Search,
   Sparkles,
   TrendingUp,
 } from "lucide-react";
@@ -16,7 +17,10 @@ import MemoryCard from "@/components/MemoryCard";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { getMemoryMedia } from "@/lib/memoryMedia";
+import { filterMemories } from "@/lib/memorySearch";
 import type { Memory } from "@/models/memory";
+
+import frierenGroupGrass from "@/assets/frieren-group-grass.jpg";
 
 type DashboardProps = {
   memories: Memory[];
@@ -32,7 +36,13 @@ type MemoryRow = {
 
 function Dashboard({ memories }: DashboardProps) {
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
   const [selectedMemory, setSelectedMemory] = useState<Memory | null>(null);
+  const searchQuery = searchParams.get("q") ?? "";
+  const visibleMemories = useMemo(
+    () => filterMemories(memories, searchQuery),
+    [memories, searchQuery]
+  );
 
   const stats = useMemo(() => {
     const mediaItems = memories.flatMap((memory) => getMemoryMedia(memory));
@@ -81,15 +91,15 @@ function Dashboard({ memories }: DashboardProps) {
 
   const recentMemories = useMemo(
     () =>
-      [...memories]
+      [...visibleMemories]
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
         .slice(0, 3),
-    [memories]
+    [visibleMemories]
   );
 
   const rowData = useMemo<MemoryRow[]>(
     () =>
-      memories.map((memory) => {
+      visibleMemories.map((memory) => {
         const mediaCount = getMemoryMedia(memory).length;
 
         return {
@@ -103,7 +113,7 @@ function Dashboard({ memories }: DashboardProps) {
               : "text",
         };
       }),
-    [memories]
+    [visibleMemories]
   );
 
   return (
@@ -111,52 +121,62 @@ function Dashboard({ memories }: DashboardProps) {
       <motion.div
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
-        className="grid gap-4 lg:grid-cols-[1.4fr_0.6fr]"
+        className="grid gap-4"
       >
-        <div className="mg-panel p-6">
-          <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+        <div className="relative overflow-hidden rounded-[2rem] border border-white/60 shadow-2xl">
+          <img
+            src={frierenGroupGrass}
+            alt="Memory Garden atmosphere"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+
+          <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/20 to-transparent" />
+
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.8,
+              ease: [0.16, 1, 0.3, 1],
+            }}
+            className="relative z-10 flex min-h-[340px] flex-col justify-between p-8 md:p-10"
+          >
             <div>
-              <p className="mg-label">Overview</p>
-              <h1 className="mt-2 max-w-2xl text-3xl font-semibold tracking-tight text-stone-900">
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-pink-200">
+                Memory Garden
+              </p>
+
+              <h1 className="mt-4 max-w-3xl text-4xl font-semibold leading-tight text-white md:text-6xl">
                 Welcome back, {user?.name ?? "Memory Keeper"}.
               </h1>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-600">
-                Track your private archive, review recent uploads, and keep the
-                garden organized from a single operating view.
+
+              <p className="mt-5 max-w-2xl text-base leading-8 text-white/85">
+                Continue growing your memories, preserving emotions, and shaping
+                your personal digital garden through peaceful moments and
+                nostalgic stories.
               </p>
             </div>
 
-            <Button
-              asChild
-              className="h-10 rounded-xl bg-pink-500 px-4 text-white hover:bg-pink-600"
-            >
-              <Link to="/plant">
-                <Plus className="size-4" />
-                New memory
-              </Link>
-            </Button>
-          </div>
-        </div>
+            <div className="mt-8 flex flex-wrap gap-4">
+              <Button
+                asChild
+                className="h-12 rounded-full bg-gradient-to-r from-pink-400 via-violet-400 to-purple-500 px-6 text-white shadow-xl shadow-pink-300/30 hover:scale-[1.02]"
+              >
+                <Link to="/plant">
+                  <Plus className="size-4" />
+                  Plant memory
+                </Link>
+              </Button>
 
-        <div className="mg-panel p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="mg-label">This month</p>
-              <p className="mt-2 text-2xl font-semibold text-stone-900">
-                {memories.length} entries
-              </p>
+              <div className="flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-5 py-3 backdrop-blur-md">
+                <TrendingUp className="size-4 text-pink-200" />
+
+                <span className="text-sm font-medium text-white/90">
+              {visibleMemories.length} memories shown
+                </span>
+              </div>
             </div>
-            <span className="grid size-11 place-items-center rounded-lg bg-pink-100 text-pink-700">
-              <TrendingUp className="size-5" />
-            </span>
-          </div>
-
-          <div className="mt-5 h-2 overflow-hidden rounded-full bg-zinc-100">
-            <div
-              className="h-full rounded-full bg-gradient-to-r from-pink-400 via-violet-400 to-purple-500"
-              style={{ width: `${Math.min(memories.length * 12, 100)}%` }}
-            />
-          </div>
+          </motion.div>
         </div>
       </motion.div>
 
@@ -217,6 +237,16 @@ function Dashboard({ memories }: DashboardProps) {
                 />
               ))}
             </div>
+          ) : memories.length > 0 ? (
+            <div className="rounded-2xl border border-dashed border-pink-200 bg-pink-50/40 p-8 text-center">
+              <Search className="mx-auto size-9 text-pink-300" />
+              <h3 className="mt-3 font-semibold text-stone-900">
+                No matches
+              </h3>
+              <p className="mt-1 text-sm text-zinc-500">
+                Try another title, emotion, description, or date.
+              </p>
+            </div>
           ) : (
             <div className="rounded-2xl border border-dashed border-pink-200 bg-pink-50/40 p-8 text-center">
               <CalendarDays className="mx-auto size-9 text-pink-300" />
@@ -233,14 +263,14 @@ function Dashboard({ memories }: DashboardProps) {
         <section className="mg-panel p-5">
           <div className="mb-5 flex items-center justify-between">
             <div>
-              <p className="mg-label">Archive table</p>
+              <p className="mg-label">Archive</p>
               <h2 className="mt-1 text-lg font-semibold text-stone-900">
                 Memory registry
               </h2>
             </div>
 
             <span className="rounded-full bg-pink-50 px-3 py-1 text-xs font-semibold text-pink-500">
-              {memories.length} saved
+              {visibleMemories.length} shown
             </span>
           </div>
 
@@ -288,6 +318,16 @@ function Dashboard({ memories }: DashboardProps) {
                   </div>
                 </button>
               ))}
+            </div>
+          ) : memories.length > 0 ? (
+            <div className="rounded-2xl border border-dashed border-pink-200 bg-pink-50/50 p-8 text-center">
+              <Search className="mx-auto size-9 text-pink-300" />
+              <p className="mt-3 font-semibold text-stone-900">
+                No registry matches
+              </p>
+              <p className="mt-2 text-sm text-stone-500">
+                Try another title, emotion, description, or date.
+              </p>
             </div>
           ) : (
             <div className="rounded-2xl border border-dashed border-pink-200 bg-pink-50/50 p-8 text-center">

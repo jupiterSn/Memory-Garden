@@ -1,78 +1,131 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, CalendarClock, Flower2, Plus, ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
+import {
+  ArrowRight,
+  Flower2,
+  Leaf,
+  Sparkles,
+  Stars,
+} from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/useAuth";
+import frierenFlowers from "@/assets/frieren-flowers.jpg";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0 },
+};
+
+const transition = {
+  duration: 0.8,
+  ease: [0.16, 1, 0.3, 1],
+} as const;
 
 function GardenHome() {
-  const { user } = useAuth();
-
   return (
-    <section className="space-y-6">
-      <motion.div
-        initial={{ opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mg-panel p-6"
-      >
-        <div className="grid gap-6 xl:grid-cols-[1fr_360px]">
-          <div>
-            <p className="mg-label">Workspace</p>
-            <h1 className="mt-2 max-w-3xl text-3xl font-semibold tracking-tight text-stone-900">
-              Good to see you, {user?.name ?? "Memory Keeper"}.
+    <section className="relative overflow-hidden rounded-[2rem] border border-white/60 bg-white/40 shadow-2xl backdrop-blur-xl">
+      <div className="relative min-h-[88vh] overflow-hidden">
+        <motion.img
+          src={frierenFlowers}
+          alt="Flower field"
+          className="absolute inset-0 h-full w-full object-cover"
+          animate={{
+            scale: [1, 1.04, 1],
+          }}
+          transition={{
+            duration: 18,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+
+        <div className="absolute inset-0 bg-gradient-to-r from-white/80 via-pink-50/45 to-transparent" />
+
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#fff7fb]" />
+
+        <div className="relative z-10 flex min-h-[88vh] items-center px-8 py-16">
+          <motion.div
+            variants={fadeUp}
+            initial="hidden"
+            animate="visible"
+            transition={transition}
+            className="max-w-3xl"
+          >
+            <div className="inline-flex items-center gap-2 rounded-full border border-pink-200 bg-white/70 px-4 py-2 backdrop-blur">
+              <Flower2 className="size-4 text-pink-500" />
+
+              <span className="text-xs font-semibold uppercase tracking-[0.25em] text-pink-500">
+                Welcome back
+              </span>
+            </div>
+
+            <h1 className="mt-6 text-5xl font-semibold leading-tight tracking-tight text-stone-900 md:text-7xl">
+              Your memories are blooming beautifully.
             </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-600">
-              Use this home base to add memories, browse the collection, or jump
-              into timeline review.
+
+            <p className="mt-6 max-w-2xl text-base leading-8 text-stone-700 md:text-lg">
+              Continue growing your digital garden through memories,
+              emotions, milestones, dreams, peaceful moments, and nostalgic
+              stories preserved in a calm visual archive.
             </p>
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <Button asChild className="h-10 rounded-xl bg-pink-500 text-white hover:bg-pink-500">
-                <Link to="/plant">
-                  <Plus className="size-4" />
-                  Plant memory
-                </Link>
-              </Button>
-              <Button asChild variant="outline" className="h-10">
-                <Link to="/dashboard">
-                  Open dashboard
-                  <ArrowRight className="size-4" />
-                </Link>
-              </Button>
-            </div>
-          </div>
 
-          <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-4">
-            <div className="flex items-center gap-3">
-              <span className="grid size-10 place-items-center rounded-lg bg-emerald-100 text-emerald-800">
-                <ShieldCheck className="size-5" />
-              </span>
-              <div>
-                <p className="font-semibold text-stone-900">Protected session</p>
-                <p className="text-sm text-zinc-500">Only you can enter this garden</p>
-              </div>
+            <div className="mt-10 flex flex-wrap gap-4">
+              <Link
+                to="/plant"
+                className="inline-flex h-12 items-center gap-2 rounded-full bg-gradient-to-r from-pink-400 via-violet-400 to-purple-500 px-6 text-sm font-semibold text-white shadow-xl shadow-pink-200 transition hover:scale-[1.03]"
+              >
+                Plant new memory
+                <ArrowRight className="size-4" />
+              </Link>
+
+              <Link
+                to="/garden"
+                className="inline-flex h-12 items-center rounded-full border border-pink-200 bg-white/70 px-6 text-sm font-semibold text-pink-600 backdrop-blur transition hover:bg-white"
+              >
+                Open garden
+              </Link>
             </div>
-          </div>
+
+            <div className="mt-12 grid gap-4 sm:grid-cols-3">
+              {[
+                {
+                  icon: Leaf,
+                  title: "Living archive",
+                  text: "Every memory becomes part of your personal garden.",
+                },
+                {
+                  icon: Stars,
+                  title: "Emotion driven",
+                  text: "Different feelings shape different visual moods.",
+                },
+                {
+                  icon: Sparkles,
+                  title: "Peaceful experience",
+                  text: "Built with smooth motion and calm aesthetics.",
+                },
+              ].map((item) => {
+                const Icon = item.icon;
+
+                return (
+                  <motion.div
+                    key={item.title}
+                    whileHover={{ y: -4 }}
+                    className="rounded-2xl border border-white/70 bg-white/55 p-5 shadow-lg backdrop-blur-md"
+                  >
+                    <Icon className="size-6 text-pink-500" />
+
+                    <h3 className="mt-4 text-lg font-semibold text-stone-900">
+                      {item.title}
+                    </h3>
+
+                    <p className="mt-2 text-sm leading-6 text-stone-600">
+                      {item.text}
+                    </p>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </motion.div>
         </div>
-      </motion.div>
-
-      <div className="grid gap-4 md:grid-cols-3">
-        {[
-          { title: "Garden", text: "View the complete visual collection.", icon: Flower2, to: "/garden" },
-          { title: "Timeline", text: "Review memories by date and emotion.", icon: CalendarClock, to: "/timeline" },
-          { title: "Dashboard", text: "Analyze archive status with AG Grid.", icon: ArrowRight, to: "/dashboard" },
-        ].map((item) => {
-          const Icon = item.icon;
-
-          return (
-            <Link key={item.title} to={item.to} className="mg-panel block p-5 transition hover:-translate-y-0.5 hover:shadow-md">
-              <span className="grid size-10 place-items-center rounded-lg bg-zinc-100 text-zinc-800">
-                <Icon className="size-5" />
-              </span>
-              <h2 className="mt-5 font-semibold text-stone-900">{item.title}</h2>
-              <p className="mt-2 text-sm leading-6 text-zinc-500">{item.text}</p>
-            </Link>
-          );
-        })}
       </div>
     </section>
   );

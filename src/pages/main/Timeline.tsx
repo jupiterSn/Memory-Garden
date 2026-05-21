@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import { CalendarClock, Plus } from "lucide-react";
+import { Link, useSearchParams } from "react-router-dom";
+import { CalendarClock, Plus, Search } from "lucide-react";
 import { motion } from "framer-motion";
 
 import MemoryDetailModal from "@/components/MemoryDetailModal";
 import { getMemoryMedia } from "@/lib/memoryMedia";
+import { filterMemories } from "@/lib/memorySearch";
 import type { Memory } from "@/models/memory";
 
 type TimelineProps = {
@@ -12,13 +13,19 @@ type TimelineProps = {
 };
 
 function Timeline({ memories }: TimelineProps) {
+  const [searchParams] = useSearchParams();
   const [selectedMemory, setSelectedMemory] = useState<Memory | null>(null);
+  const searchQuery = searchParams.get("q") ?? "";
+  const visibleMemories = useMemo(
+    () => filterMemories(memories, searchQuery),
+    [memories, searchQuery]
+  );
 
   const sortedMemories = useMemo(() => {
-    return [...memories].sort(
+    return [...visibleMemories].sort(
       (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
     );
-  }, [memories]);
+  }, [visibleMemories]);
 
   return (
     <section className="space-y-6">
@@ -33,7 +40,7 @@ function Timeline({ memories }: TimelineProps) {
         </p>
       </div>
 
-      {sortedMemories.length === 0 ? (
+      {memories.length === 0 ? (
         <div className="mg-panel p-10 text-center">
           <CalendarClock className="mx-auto size-10 text-zinc-300" />
 
@@ -52,6 +59,18 @@ function Timeline({ memories }: TimelineProps) {
             <Plus className="size-4" />
             Plant memory
           </Link>
+        </div>
+      ) : sortedMemories.length === 0 ? (
+        <div className="mg-panel p-10 text-center">
+          <Search className="mx-auto size-10 text-zinc-300" />
+
+          <h2 className="mt-4 text-xl font-semibold text-stone-900">
+            No matching timeline entries
+          </h2>
+
+          <p className="mt-2 text-sm text-zinc-500">
+            Try another title, emotion, description, or date.
+          </p>
         </div>
       ) : (
         <div className="mg-panel p-6">

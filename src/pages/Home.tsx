@@ -16,8 +16,8 @@ const fadeUp = {
 
 const softTransition = {
   duration: 0.75,
-  ease: "easeOut",
-};
+  ease: [0.16, 1, 0.3, 1],
+} as const;
 
 function SakuraPetals() {
   return (
