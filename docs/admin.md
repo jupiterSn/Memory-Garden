@@ -11,8 +11,10 @@ Admins can:
 - see role
 - see active session count
 - see failed login count
+- create user or admin accounts
 - change account status
 - revoke user sessions
+- delete accounts
 - view security summary metrics
 
 Admins cannot:

@@ -16,7 +16,6 @@ The project intentionally does not use a real backend. It uses a fake database i
 - React Router DOM for routing
 - Context API for authentication state
 - Framer Motion for animation
-- AG Grid for dashboard table management
 - Sonner for toast notifications
 - `localStorage` for fake persistence in the browser
 
@@ -58,7 +57,10 @@ Collects memory information and one or more media files, then creates a memory o
 Renders memories as interactive plants on a realistic garden background.
 
 `Dashboard`:
-Shows memory statistics and an AG Grid table.
+Shows a visual welcome hero, memory statistics, recent memories, and a clickable registry.
+
+`memorySearch.ts`:
+Filters memories by title, description, emotion, date, and media name. The navbar, dashboard, garden, and timeline share the same `?q=` query.
 
 `MemoryDetailModal`:
 Opens a full memory view from the dashboard, garden, or timeline, including every media attachment.
@@ -121,8 +123,8 @@ It gives the whole app access to authentication state without passing props thro
 Why protected routes?
 They prevent unauthenticated users from opening pages such as dashboard, garden, profile, and admin.
 
-Why AG Grid?
-It provides professional table features like sorting, filtering, pagination, and scalable data display.
+Why use a custom dashboard registry?
+It keeps the demo lighter and makes each row open the memory detail view directly.
 
 Can admins see memories?
 No. The admin page only reads account metadata from the fake database.

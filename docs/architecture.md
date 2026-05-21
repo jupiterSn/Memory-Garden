@@ -14,6 +14,7 @@ Main layers:
 - `layouts/`: protected application shell
 - `pages/`: public, auth, app, admin, profile, and settings screens
 - `routes/`: route guards
+- `lib/`: shared helpers for memory media normalization and search
 - `models/`: TypeScript data models
 
 ## Fake Database
@@ -29,8 +30,7 @@ The fake database tracks:
 - lockout time
 - active browser session ids
 - revoked session count
-- saved preferences
-- per-account memories
+- garden preferences
 
 ## Data Flow
 
@@ -38,8 +38,14 @@ The fake database tracks:
 2. `mockAuth.ts` checks the local fake database.
 3. A browser session id and sanitized user object are saved in `localStorage`.
 4. `ProtectedRoute` uses auth context to permit or redirect users.
-5. Memories are stored locally under a user-specific key and rendered in dashboard, garden, and timeline views.
+5. Memories are stored locally by `AppRoutes` under a user-specific `memory-garden-memories-{userId}` key.
 6. Admin actions update account metadata in the local fake database.
+
+## Memory Flow
+
+Memory creation happens in `PlantMemory`. Attachments are converted to browser data URLs and saved in each memory's `mediaItems` array. The compatibility fields `mediaUrl` and `mediaType` are still populated for older memory shapes.
+
+`getMemoryMedia` normalizes old and new memory media shapes before rendering. `filterMemories` powers the shared `?q=` search used by the navbar, dashboard, garden, and timeline.
 
 ## Important Limitation
 

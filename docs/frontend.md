@@ -38,6 +38,14 @@ Protected routes:
 
 `ProtectedRoute` prevents unauthenticated users from entering the application shell. The admin page also checks that the current user has `role: "admin"`.
 
+## Search
+
+The navbar search is a real controlled search input. It writes the query into the URL as `?q=` and searches memories on `/dashboard`, `/garden`, and `/timeline`.
+
+The garden page also has a local search input connected to the same URL query, so changing either search box updates the same result set.
+
+Search is implemented in `src/lib/memorySearch.ts` and matches memory title, description, emotion, date, and attached media names.
+
 ## UI Design
 
 The UI uses a soft garden visual language:
@@ -69,7 +77,7 @@ Memories are saved per account with user-specific browser storage keys, so a new
 
 ## Dashboard
 
-The dashboard uses AG Grid to display memory data in a filterable, sortable registry. It also includes summary cards and recent memory previews.
+The dashboard shows a visual hero, memory summary cards, recent memory previews, and a clickable memory registry. When `?q=` is present, the recent list and registry show only matching memories while the summary cards continue to describe the full archive.
 
 ## Frontend Security Demonstrations
 
@@ -82,6 +90,7 @@ The dashboard uses AG Grid to display memory data in a filterable, sortable regi
 - Admin-only route logic
 - Session id generation in the browser
 - Admin session revocation demo
+- Admin user creation and deletion demo
 - Admin metadata privacy: admins cannot see memory details
 
 ## Theme Preferences
