@@ -2,9 +2,9 @@
 
 ## Project Summary
 
-Memory Garden is a frontend-only web application that lets users preserve memories as a visual garden. A user can create an account, log in, plant a memory with an emotion and optional images/videos, then revisit those memories through a dashboard, garden, and timeline.
+Memory Garden is a frontend-only web application that lets users preserve memories as a visual garden. A user can create an account, log in, plant a memory with an emotion and optional images/videos, then revisit and edit those memories through a dashboard, garden, and timeline.
 
-The project intentionally does not use a real backend. It uses a fake database in the frontend because this is a Web 1/frontend course project.
+The project uses a fake database in the frontend because this is a Web 1/frontend course project.
 
 ## Technologies Used
 
@@ -63,7 +63,7 @@ Shows a visual welcome hero, memory statistics, recent memories, and a clickable
 Filters memories by title, description, emotion, date, and media name. The navbar, dashboard, garden, and timeline share the same `?q=` query.
 
 `MemoryDetailModal`:
-Opens a full memory view from the dashboard, garden, or timeline, including every media attachment.
+Opens a full memory view from the dashboard, garden, or timeline, including every media attachment. It also lets users edit the title, story, date, and emotion of an existing memory.
 
 `Admin`:
 Allows an admin to manage account metadata and sessions without seeing private memories.
@@ -111,9 +111,6 @@ Users can upload, edit, or remove a profile picture after an in-app toast confir
 
 ## Questions A Doctor Might Ask
 
-Why no backend?
-Because this is a Web 1/frontend project. The fake database keeps the demo inside React and `localStorage`.
-
 Where are the usernames and passwords?
 They are written in `src/data/mockAuth.ts`, like the admin credential demo.
 
@@ -130,7 +127,4 @@ Can admins see memories?
 No. The admin page only reads account metadata from the fake database.
 
 Are these real security features?
-No. They are frontend demonstrations. Real security requires a backend.
-
-How would you make it production-ready in Web 2?
-Move users and sessions to a backend database, hash passwords on the server, enforce rate limits on the server, use secure cookies or server-issued tokens, add real email verification, use HTTPS, and add real two-factor authentication.
+They are frontend demonstrations for the course project.

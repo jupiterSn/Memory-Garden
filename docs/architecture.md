@@ -39,14 +39,17 @@ The fake database tracks:
 3. A browser session id and sanitized user object are saved in `localStorage`.
 4. `ProtectedRoute` uses auth context to permit or redirect users.
 5. Memories are stored locally by `AppRoutes` under a user-specific `memory-garden-memories-{userId}` key.
-6. Admin actions update account metadata in the local fake database.
+6. Memory edits flow from `MemoryDetailModal` back through `AppRoutes`, where the matching local memory is replaced and saved again.
+7. Admin actions update account metadata in the local fake database.
 
 ## Memory Flow
 
 Memory creation happens in `PlantMemory`. Attachments are converted to browser data URLs and saved in each memory's `mediaItems` array. The compatibility fields `mediaUrl` and `mediaType` are still populated for older memory shapes.
 
+Memory editing happens in `MemoryDetailModal` from the dashboard, garden, and timeline. Users can update the title, story, date, and emotion while keeping the existing media attachments.
+
 `getMemoryMedia` normalizes old and new memory media shapes before rendering. `filterMemories` powers the shared `?q=` search used by the navbar, dashboard, garden, and timeline.
 
-## Important Limitation
+## Project Scope
 
-This project intentionally has no backend. The security features are frontend demonstrations for Web 1. Real security must be enforced by a backend in a production/Web 2 application.
+Memory Garden runs entirely in the browser for the course demo. Authentication state, preferences, admin metadata, and memories are all stored locally.

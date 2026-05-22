@@ -24,6 +24,7 @@ import frierenGroupGrass from "@/assets/frieren-group-grass.jpg";
 
 type DashboardProps = {
   memories: Memory[];
+  updateMemory: (memory: Memory) => void;
 };
 
 type MemoryRow = {
@@ -34,7 +35,7 @@ type MemoryRow = {
   media: string;
 };
 
-function Dashboard({ memories }: DashboardProps) {
+function Dashboard({ memories, updateMemory }: DashboardProps) {
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
   const [selectedMemory, setSelectedMemory] = useState<Memory | null>(null);
@@ -345,6 +346,10 @@ function Dashboard({ memories }: DashboardProps) {
       <MemoryDetailModal
         memory={selectedMemory}
         onClose={() => setSelectedMemory(null)}
+        onUpdate={(memory) => {
+          updateMemory(memory);
+          setSelectedMemory(memory);
+        }}
       />
     </section>
   );

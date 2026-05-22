@@ -10,9 +10,10 @@ import type { Memory } from "@/models/memory";
 
 type TimelineProps = {
   memories: Memory[];
+  updateMemory: (memory: Memory) => void;
 };
 
-function Timeline({ memories }: TimelineProps) {
+function Timeline({ memories, updateMemory }: TimelineProps) {
   const [searchParams] = useSearchParams();
   const [selectedMemory, setSelectedMemory] = useState<Memory | null>(null);
   const searchQuery = searchParams.get("q") ?? "";
@@ -134,6 +135,10 @@ function Timeline({ memories }: TimelineProps) {
       <MemoryDetailModal
         memory={selectedMemory}
         onClose={() => setSelectedMemory(null)}
+        onUpdate={(memory) => {
+          updateMemory(memory);
+          setSelectedMemory(memory);
+        }}
       />
     </section>
   );

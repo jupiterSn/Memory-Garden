@@ -71,7 +71,7 @@ Images are converted into persistent browser data URLs so they remain visible af
 
 Each memory can store multiple media attachments in `mediaItems`. Older single-file memories still work through the legacy `mediaUrl` and `mediaType` fields.
 
-Clicking a memory in the dashboard, garden, or timeline opens a full detail view with the story, date, emotion, and every attached image/video. Garden deletion is handled by a separate remove button with a toast confirmation.
+Clicking a memory in the dashboard, garden, or timeline opens a full detail view with the story, date, emotion, and every attached image/video. The detail view can switch into edit mode so users can update the title, story, date, and emotion while keeping existing media attached. Garden deletion is handled by a separate remove button with a toast confirmation.
 
 Memories are saved per account with user-specific browser storage keys, so a new account starts with an empty dashboard, garden, and timeline.
 

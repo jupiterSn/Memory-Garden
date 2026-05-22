@@ -8,9 +8,9 @@ Memory Garden is a frontend-only React application for preserving personal memor
 - Tailwind CSS, shadcn/ui primitives, lucide icons, Framer Motion
 - Protected routing with Context API authentication
 - Frontend mock authentication and browser `localStorage` persistence
-- Memory creation with images/videos, per-account local persistence, garden rendering, and timeline views
+- Memory creation and editing with images/videos, per-account local persistence, garden rendering, and timeline views
 - Shared memory search through the `?q=` URL query on dashboard, garden, and timeline pages
-- Dashboard with summary cards, recent memory previews, and a clickable memory registry
+- Dashboard with summary cards, recent memory previews, a clickable memory registry, and editable detail views
 - Professional profile and settings surfaces
 - Admin user console for account safety without access to private memories
 - Frontend security demonstrations: strong passwords, lockout, session tracking, session revocation, and account status controls
@@ -43,7 +43,7 @@ Regular users can be created from the signup screen.
 /dashboard    Dashboard, summary cards, and memory registry
 /plant        Plant a memory
 /garden       Visual planted garden
-/timeline     Chronological memory view
+/timeline     Chronological memory view with editable details
 /profile      Profile management
 /settings     Workspace settings
 /admin        Admin user safety console
@@ -72,7 +72,7 @@ Memory Garden includes frontend demonstrations of authentication and session sec
 - Admin account status controls
 - Admin metadata privacy: admins cannot read private memories or media
 
-The current implementation uses browser `localStorage` through `src/data/mockAuth.ts` and user-specific memory keys in `src/routes/AppRoutes.tsx`. These features are for a frontend/Web 1 demo. Production security requires a backend.
+The current implementation uses browser `localStorage` through `src/data/mockAuth.ts` and user-specific memory keys in `src/routes/AppRoutes.tsx`.
 
 ## Documentation
 

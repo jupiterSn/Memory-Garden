@@ -14,6 +14,7 @@ import type { Memory } from "@/models/memory";
 type GardenProps = {
   memories: Memory[];
   deleteMemory: (id: number) => void;
+  updateMemory: (memory: Memory) => void;
 };
 
 const plantPositions = [
@@ -30,16 +31,15 @@ const plantPositions = [
 function PlantVisual({ memory }: { memory: Memory }) {
   const mediaItems = getMemoryMedia(memory);
   const imageMedia = mediaItems.find((item) => item.type === "image");
-  const imageBloom =
-    imageMedia ? (
-      <div className="absolute left-1/2 top-1 z-20 size-14 -translate-x-1/2 overflow-hidden rounded-full border-4 border-white/80 shadow-lg shadow-pink-100">
-        <img
-          src={imageMedia.url}
-          alt={memory.title}
-          className="h-full w-full object-cover"
-        />
-      </div>
-    ) : null;
+  const imageBloom = imageMedia ? (
+    <div className="absolute left-1/2 top-1 z-20 size-14 -translate-x-1/2 overflow-hidden rounded-full border-4 border-white/80 shadow-lg shadow-pink-100">
+      <img
+        src={imageMedia.url}
+        alt={memory.title}
+        className="h-full w-full object-cover"
+      />
+    </div>
+  ) : null;
 
   if (memory.emotion === "happy") {
     return (
@@ -102,7 +102,7 @@ function PlantVisual({ memory }: { memory: Memory }) {
   );
 }
 
-function Garden({ memories, deleteMemory }: GardenProps) {
+function Garden({ memories, deleteMemory, updateMemory }: GardenProps) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedMemory, setSelectedMemory] = useState<Memory | null>(null);
   const searchQuery = searchParams.get("q") ?? "";
@@ -238,6 +238,7 @@ function Garden({ memories, deleteMemory }: GardenProps) {
                   >
                     <PlantVisual memory={memory} />
                   </button>
+
                   <button
                     type="button"
                     onClick={() => setSelectedMemory(memory)}
@@ -249,6 +250,7 @@ function Garden({ memories, deleteMemory }: GardenProps) {
                       {memory.emotion}
                     </span>
                   </button>
+
                   <Button
                     type="button"
                     variant="destructive"
@@ -269,6 +271,10 @@ function Garden({ memories, deleteMemory }: GardenProps) {
       <MemoryDetailModal
         memory={selectedMemory}
         onClose={() => setSelectedMemory(null)}
+        onUpdate={(memory) => {
+          updateMemory(memory);
+          setSelectedMemory(memory);
+        }}
       />
     </section>
   );

@@ -4,7 +4,6 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "@/pages/Home";
 import Login from "@/pages/auth/Login";
 import Signup from "@/pages/auth/Signup";
-
 import Dashboard from "@/pages/main/Dashboard";
 import GardenHome from "@/pages/main/GardenHome";
 import PlantMemory from "@/pages/main/PlantMemory";
@@ -27,16 +26,13 @@ function getMemoryStorageKey(userId: number) {
 
 function AppRoutes() {
   const { user } = useAuth();
-
   const currentUserId = user?.id ?? null;
   const [memoryVersion, setMemoryVersion] = useState(0);
 
   const memories = useMemo(() => {
     void memoryVersion;
 
-    if (!currentUserId) {
-      return [];
-    }
+    if (!currentUserId) return [];
 
     try {
       const savedMemories = localStorage.getItem(
@@ -51,9 +47,7 @@ function AppRoutes() {
   }, [currentUserId, memoryVersion]);
 
   const addMemory = (memory: Memory) => {
-    if (!currentUserId) {
-      return;
-    }
+    if (!currentUserId) return;
 
     localStorage.setItem(
       getMemoryStorageKey(currentUserId),
@@ -63,10 +57,23 @@ function AppRoutes() {
     setMemoryVersion((currentVersion) => currentVersion + 1);
   };
 
+  const updateMemory = (updatedMemory: Memory) => {
+    if (!currentUserId) return;
+
+    const updatedMemories = memories.map((memory) =>
+      memory.id === updatedMemory.id ? updatedMemory : memory
+    );
+
+    localStorage.setItem(
+      getMemoryStorageKey(currentUserId),
+      JSON.stringify(updatedMemories)
+    );
+
+    setMemoryVersion((currentVersion) => currentVersion + 1);
+  };
+
   const deleteMemory = (id: number) => {
-    if (!currentUserId) {
-      return;
-    }
+    if (!currentUserId) return;
 
     localStorage.setItem(
       getMemoryStorageKey(currentUserId),
@@ -93,14 +100,37 @@ function AppRoutes() {
             </ProtectedRoute>
           }
         >
-          <Route path="/dashboard" element={<Dashboard memories={memories} />} />
+          <Route
+            path="/dashboard"
+            element={
+              <Dashboard memories={memories} updateMemory={updateMemory} />
+            }
+          />
+
           <Route path="/app" element={<GardenHome />} />
-          <Route path="/plant" element={<PlantMemory addMemory={addMemory} />} />
+
+          <Route
+            path="/plant"
+            element={<PlantMemory addMemory={addMemory} />}
+          />
+
           <Route
             path="/garden"
-            element={<Garden memories={memories} deleteMemory={deleteMemory} />}
+            element={
+              <Garden
+                memories={memories}
+                deleteMemory={deleteMemory}
+                updateMemory={updateMemory}
+              />
+            }
           />
-          <Route path="/timeline" element={<Timeline memories={memories} />} />
+
+          <Route
+            path="/timeline"
+            element={
+              <Timeline memories={memories} updateMemory={updateMemory} />
+            }
+          />
           <Route path="/profile" element={<Profile />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/admin" element={<Admin />} />
